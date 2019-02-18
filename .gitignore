@@ -1,0 +1,13 @@
+/*
+
+!/bin/
+!/config/
+!/resources/
+!/src/
+!/.gitignore
+!/.gitlab-ci.yml
+!/CHANGELOG*
+!/composer.json
+!/CONTRIBUTING*
+!/LICENSE
+!/README*

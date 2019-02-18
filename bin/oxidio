@@ -1,0 +1,14 @@
+<?php
+
+namespace fn;
+
+use fn\Cli\IO;
+
+call_user_func(require __DIR__ . '/../vendor/autoload.php', function(Cli $app) {
+
+    $app->command('io:error', function(IO $io) {
+        $io->error('error');
+    });
+
+    $app();
+});

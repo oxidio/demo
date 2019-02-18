@@ -1,0 +1,35 @@
+{
+  "type": "project",
+  "name": "oxidio/project",
+  "license": "MIT",
+  "require": {
+    "vlucas/phpdotenv": "^3",
+    "php-fn/di": "^1",
+    "php-fn/cli": "^1",
+    "phpdocumentor/reflection-docblock": "^4",
+    "oxidio/bin": "^1",
+    "oxidio/shop": "^6",
+    "oxidio/facts": "^2",
+    "oxidio/unified-namespace-generator": "^2",
+    "oxidio/composer-plugin": "^2",
+    "oxidio/theme-flow": "^3",
+    "oxidio/doctrine-migration-wrapper": "^2",
+    "oxid-esales/oxideshop-db-views-generator": "^1"
+  },
+
+  "autoload": {
+    "psr-4": {
+      "OxidEsales\\EshopCommunity\\MigrationsProject\\": ["source/migration/project_data/"],
+      "Oxidio\\": ["src/"]
+    },
+    "files": [
+      "src/autoload-files.php"
+    ]
+  },
+  "extra": {
+    "di": "config/di.php",
+    "di-config": {
+      "wiring": "reflection"
+    }
+  }
+}

@@ -27,4 +27,8 @@ call_user_func(function(...$files) {
             }
         }
     }
-}, __DIR__ . '/../source/bootstrap.php', __DIR__ . '/../../../../source/bootstrap.php');
+},
+    __DIR__ . '/../source/bootstrap.php',
+    __DIR__ . '/../../../../source/bootstrap.php',
+    __DIR__ . '/Oxidio/constants.php'
+);

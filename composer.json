@@ -1,0 +1,10 @@
+{
+  "type": "project",
+  "require": {
+    "oxid-esales/oxideshop-ce": "^6"
+  },
+  "require-dev": {
+    "oxid-esales/oxideshop-composer-plugin": "^2",
+    "oxid-esales/oxideshop-unified-namespace-generator": "^2"
+  }
+}

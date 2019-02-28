@@ -5,6 +5,7 @@ namespace DI;
 use fn;
 use fn\{Cli};
 use OxidEsales\{Eshop\Core, EshopCommunity\Setup};
+use Oxidio\Meta\EditionClass;
 
 return [
     'cli.name'     => 'oxidio',
@@ -12,8 +13,42 @@ return [
     'cli'          => function(fn\DI\Container $container) {
         $cli = fn\cli($container);
         $cli->command('setup', 'cli.command.setup', ['action']);
+        $cli->command('meta', 'cli.command.meta');
+
         return $cli;
     },
+
+    'cli.command.meta' => value(
+        /**
+         * show meta info (tables, fields, templates, blocks)
+         */
+        function(Cli\IO $io) {
+            foreach (EditionClass::all() as $class) {
+                $io->title($class->class);
+                $io->table(['property', 'value'], [
+                    ['package', $class->package],
+                    ['table', $class->table],
+                    ['(edition) (toString)', "({$class->edition}) ({$class})"],
+                    ['(namespace) (shortName)', "({$class->namespace}) ({$class->shortName})"],
+                    ['derivation', $class->derivation->string(' > ')],
+                    ['parent-edition', $class->parent ? $class->parent->edition : null],
+                ]);
+//                $ref = new \ReflectionClass($class);
+//                $obj = $ref->isInstantiable() ? $ref->newInstanceWithoutConstructor() : null;
+//                if ($obj instanceof Core\Model\BaseModel) {
+//                    $io->writeln($class);
+//                    $obj = oxNew($class);
+//                    $io->error($obj->getCoreTableName());
+//                } else if ($obj instanceof Core\Model\ListModel) {
+//                    $io->success($class);
+//                } else {
+//                    continue;
+//                }
+            }
+
+        }
+    ),
+
     'cli.command.setup' => value(
         /**
          * @param string $action systemreq|welcome|license|dbinfo|dbconnect|dirsinfo|dirswrite|dbcreate|finish

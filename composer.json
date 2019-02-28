@@ -20,7 +20,7 @@
   "autoload": {
     "psr-4": {
       "OxidEsales\\EshopCommunity\\MigrationsProject\\": ["source/migration/project_data/"],
-      "Oxidio\\": ["src/"]
+      "Oxidio\\": ["src/Oxidio/"]
     },
     "files": [
       "src/autoload-files.php"

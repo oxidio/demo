@@ -3,5 +3,4 @@
 
 call_user_func(require __DIR__ . '/../vendor/autoload.php', function() {
     fn\di(__DIR__ . '/../config/di-cli.php')->call('cli');
-//    fn\cli(__DIR__ . '/../config/di-cli.php')();
 });

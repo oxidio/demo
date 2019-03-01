@@ -15,7 +15,7 @@ return [
     'cli'          => function(fn\DI\Container $container) {
         $cli = fn\cli($container);
         $cli->command('setup', new Setup, ['action']);
-        $cli->command('meta', new Meta);
+        $cli->command('meta', new Meta, ['filter']);
         $cli->command('db:views', new DbViews);
 
         return $cli;

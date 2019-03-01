@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © oxidio. All rights reserved. See LICENSE file for license details.
+ * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
 namespace DI;

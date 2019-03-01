@@ -21,17 +21,15 @@ class Meta
      * @param bool     $filterTable    Filter classes with db tables (not abstract models)
      * @param bool     $filterTemplate Filter classes with templates (not abstract controllers)
      * @param string   $filter         Filter classes by pattern
-     * @param string[] $action         (tables)
+     * @param string   $tableNs        Namespace for TABLE\* constants
      */
     public function __invoke(
         IO $io,
         bool $filterTable = false,
         bool $filterTemplate = false,
         string $filter = null,
-        array $action = []
+        string $tableNs = null
     ) {
-        $onTable = fn\hasValue('tables', $action);
-
         foreach (EditionClass::all() as $class) {
             if ($filter && stripos($class->package, $filter) === false) {
                 continue;
@@ -43,7 +41,7 @@ class Meta
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $class);
-            $onTable && $class->table && $this->onTable($class);
+            $tableNs !== null && $class->table && $this->onTable($class, $tableNs);
         }
 
         $io->writeln(fn\traverse($this->renderConstants()));
@@ -119,11 +117,12 @@ class Meta
         return [$data[$ns], $data[$ns]->constants[$const]];
     }
 
-    protected function onTable(EditionClass $class): void
+    protected function onTable(EditionClass $class, string $tableNs): void
     {
+        $tableNs = $tableNs ?: 'OxidEsales\\Eshop\\Core\\Database\\';
         $table = strtoupper($class->table);
 
-        [, $const] = $this->nc("TABLE\\$table");
+        [, $const] = $this->nc("{$tableNs}TABLE\\$table");
         $const->value = var_export($class->table->name, true);
         if (!$const->doc) {
             $const->doc = ["{$class->table->comment} [{$class->table->engine}]", '', "@see $table\\*"];
@@ -131,7 +130,7 @@ class Meta
         $const->doc[] = "@see \\{$class->class}::__construct";
 
         foreach ($class->table->columns as $column) {
-            [$ns, $const] = $this->nc("TABLE\\{$table}\\" . strtoupper($column));
+            [$ns, $const] = $this->nc("{$tableNs}TABLE\\{$table}\\" . strtoupper($column));
             $const->value = var_export($column->name, true);
 
             $type = $column->type;
@@ -139,7 +138,7 @@ class Meta
             $column->default !== null && $type .= " = {$column->default}";
 
             $const->doc = [$column->comment, '', $type];
-            $ns->doc = ["@see \\TABLE\\{$table}"];
+            $ns->doc = ["@see \\{$tableNs}TABLE\\{$table}"];
         }
     }
 }

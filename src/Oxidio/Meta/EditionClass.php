@@ -174,8 +174,8 @@ class EditionClass
 
     protected function resolveTable(): ?Table
     {
-        if (($model = $this->instance) && $model instanceof BaseModel) {
-            return Table::cache($model->getCoreTableName(), $model->getFieldNames());
+        if (($model = $this->instance) && $model instanceof BaseModel && $table = $model->getCoreTableName()) {
+            return Table::cache($table, $model->getFieldNames());
         }
         return null;
     }

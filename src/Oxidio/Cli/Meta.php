@@ -12,6 +12,7 @@ use Oxidio\Meta\EditionClass;
 class Meta
 {
     protected $constants = [];
+    protected $use = [];
 
     /**
      * Show meta info (tables, fields, templates, blocks)
@@ -50,15 +51,32 @@ class Meta
 
     private function renderConstants(): \Generator
     {
-        yield null;
-        foreach ($this->constants as $ns => $constants) {
-            yield "namespace $ns";
+        yield '';
+        yield '/** @noinspection SpellCheckingInspection */';
+        yield '';
+
+        foreach ($this->constants as $nsName => $ns) {
+            yield '/**';
+            foreach ($ns->doc as $line) {
+                yield " * $line";
+            }
+            yield ' */';
+            yield "namespace $nsName";
             yield '{';
-            foreach ($constants as $constant => $value) {
-                yield "    const $constant = '$value';";
+            foreach ($ns->use as $use) {
+                yield "    use $use;";
+            }
+            foreach ($ns->constants as $name => $const) {
+                yield '';
+                yield '    /**';
+                foreach ($const->doc as $line) {
+                    yield "     * $line";
+                }
+                yield '     */';
+                yield "    const $name = {$const->value};";
             }
             yield '}';
-            yield null;
+            yield '';
         }
     }
 
@@ -75,17 +93,54 @@ class Meta
             ['parent-edition', $class->parent ? $class->parent->edition : null],
         ]);
 
-        $io->isVeryVerbose() && $table && $io->listing($table->fields);
+        if ($table && $io->isVeryVerbose()) {
+            $io->listing($table->fields);
+            $table->comment;
+        }
+    }
+
+    private static function split(string $name): array
+    {
+        $last  = strrpos($name, '\\');
+        return [substr($name, 0, $last), substr($name, $last + 1)];
+    }
+
+    private function nc(string $name): array
+    {
+        $data = &$this->constants;
+
+        [$ns, $const] = self::split($name);
+        if (!isset($data[$ns])) {
+            $data[$ns] = (object)['doc' => [], 'use' => [], 'constants' => []];
+        }
+        if (!isset($data[$ns]->constants[$const])) {
+            $data[$ns]->constants[$const] = (object)['value' => 'null', 'doc' => []];
+        }
+        return [$data[$ns], $data[$ns]->constants[$const]];
     }
 
     protected function onTable(EditionClass $class): void
     {
-        $this->constants['TABLE'][$table = strtoupper($class->table)] = $class->table;
-        foreach ($class->fields as $field) {
-            $this->constants["TABLE\\{$table}"][strtoupper($field)] = $field;
-        }
+        $table = strtoupper($class->table);
 
-//        oxNew(Wrapping::class)->getFieldData(Wrapping\ID);
-//        oxNew(Wrapping::class)->assign([Wrapping\ID => 'value']);
+        [, $const] = $this->nc("TABLE\\$table");
+        $const->value = var_export($class->table->name, true);
+        $const->doc   =  [
+            "{$class->table->comment} [{$class->table->engine}]", '',
+            "@see \\{$class->class}::__construct",
+            "@see $table\\*",
+        ];
+
+        foreach ($class->table->columns as $column) {
+            [$ns, $const] = $this->nc("TABLE\\{$table}\\" . strtoupper($column));
+            $const->value = var_export($column->name, true);
+
+            $type = $column->type;
+            $column->length > 0 && $type .= "({$column->length})";
+            $column->default !== null && $type .= " = {$column->default}";
+
+            $const->doc = [$column->comment, '', $type];
+            $ns->doc = ["@see \\TABLE\\{$table}"];
+        }
     }
 }

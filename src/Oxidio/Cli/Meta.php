@@ -125,11 +125,10 @@ class Meta
 
         [, $const] = $this->nc("TABLE\\$table");
         $const->value = var_export($class->table->name, true);
-        $const->doc   =  [
-            "{$class->table->comment} [{$class->table->engine}]", '',
-            "@see \\{$class->class}::__construct",
-            "@see $table\\*",
-        ];
+        if (!$const->doc) {
+            $const->doc = ["{$class->table->comment} [{$class->table->engine}]", '', "@see $table\\*"];
+        }
+        $const->doc[] = "@see \\{$class->class}::__construct";
 
         foreach ($class->table->columns as $column) {
             [$ns, $const] = $this->nc("TABLE\\{$table}\\" . strtoupper($column));

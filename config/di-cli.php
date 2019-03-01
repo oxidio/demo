@@ -1,4 +1,7 @@
 <?php
+/**
+ * Copyright © oxidio. All rights reserved. See LICENSE file for license details.
+ */
 
 namespace DI;
 

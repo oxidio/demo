@@ -1,7 +1,7 @@
 {
   "type": "project",
   "name": "oxidio/project",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "require": {
     "vlucas/phpdotenv": "^3",
     "php-fn/di": "^1",

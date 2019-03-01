@@ -42,3 +42,49 @@ namespace OxidEsales\EshopCommunity\Setup
     ];
 }
 
+
+namespace OxidEsales\Eshop\TABLE
+{
+    const ACTIONS = 'oxactions';
+}
+
+namespace OxidEsales\Eshop\TABLE\ACTIONS
+{
+    const ID     = 'oxid';
+    const SHOPID = 'shopid';
+    const TYPE   = 'oxtype';
+    const TITLE  = 'oxtitle';
+}
+
+namespace OxidEsales\Eshop\Application\Model\ACTIONS
+{
+    use OxidEsales\Eshop\{TABLE, TABLE\ACTIONS};
+
+    const ID     = TABLE\ACTIONS . '__' . ACTIONS\ID;
+    const SHOPID = TABLE\ACTIONS . '__' . ACTIONS\SHOPID;
+}
+
+
+namespace OxidEsales\Eshop\BLOCK\LAYOUT
+{
+    const BASE = 'layout/base.tpl';
+}
+
+namespace OxidEsales\Eshop\BLOCK\LAYOUT\BASE
+{
+    const HEAD_TITLE       = 'head_title';
+    const HEAD_META_ROBOTS = 'head_meta_robots';
+}
+
+namespace OxidEsales\Eshop
+{
+    use OxidEsales\Eshop\BLOCK\{LAYOUT};
+
+    const TPL = [
+        LAYOUT\BASE => [
+            LAYOUT\BASE\HEAD_TITLE,
+            LAYOUT\BASE\HEAD_META_ROBOTS,
+        ]
+    ];
+}
+

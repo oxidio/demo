@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+/**
+ * Copyright © oxidio. All rights reserved. See LICENSE file for license details.
+ */
 
 call_user_func(require __DIR__ . '/../vendor/autoload.php', function() {
     fn\di(__DIR__ . '/../config/di-cli.php')->call('cli');

@@ -41,8 +41,7 @@ use OxidEsales\Eshop\{
  * @property-read EditionClass $parent = null
  * @property-read string $package
  * @property-read object $instance = null
- * @property-read string $table
- * @property-read string[] $fields
+ * @property-read Table $table = null
  * @property-read string $template
  */
 class EditionClass
@@ -107,10 +106,10 @@ class EditionClass
      */
     public function __get($name)
     {
-        return $this->properties[$name] ?? $this->properties[$name] = $this->{"_get$name"}();
+        return $this->properties[$name] ?? $this->properties[$name] = $this->{"resolve$name"}();
     }
 
-    protected function _getDerivation(): fn\Map
+    protected function resolveDerivation(): fn\Map
     {
         $ref = $this->reflection;
         $parents = [];
@@ -123,28 +122,28 @@ class EditionClass
         });
     }
 
-    protected function _getParent(): ?self
+    protected function resolveParent(): ?self
     {
         $parent = $this->reflection->getParentClass();
         return $parent ? static::cache($parent->getName()) : null;
     }
 
-    protected function _getReflection(): ReflectionClass
+    protected function resolveReflection(): ReflectionClass
     {
         return new ReflectionClass($this->class);
     }
 
-    protected function _getShortName(): string
+    protected function resolveShortName(): string
     {
         return $this->reflection->getShortName();
     }
 
-    protected function _getNamespace(): string
+    protected function resolveNamespace(): string
     {
         return $this->reflection->getNamespaceName();
     }
 
-    protected function _getPackage(): string
+    protected function resolvePackage(): string
     {
         static $packages;
         if ($packages === null) {
@@ -160,7 +159,7 @@ class EditionClass
         return '\\UNKNOWN';
     }
 
-    protected function _getInstance()
+    protected function resolveInstance()
     {
         $ref = $this->reflection;
         if ($ref->isInstantiable()) {
@@ -173,17 +172,15 @@ class EditionClass
         return null;
     }
 
-    protected function _getTable()
+    protected function resolveTable(): ?Table
     {
-        return $this->instance instanceof BaseModel ? $this->instance->getCoreTableName() : null;
+        if (($model = $this->instance) && $model instanceof BaseModel) {
+            return Table::cache($model->getCoreTableName(), $model->getFieldNames());
+        }
+        return null;
     }
 
-    protected function _getFields(): array
-    {
-        return $this->instance instanceof BaseModel ? $this->instance->getFieldNames() : [];
-    }
-
-    protected function _getTemplate()
+    protected function resolveTemplate()
     {
         return $this->instance instanceof BaseController ? $this->instance->getTemplateName() : null;
     }

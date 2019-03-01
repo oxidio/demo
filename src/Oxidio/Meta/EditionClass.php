@@ -43,6 +43,7 @@ use OxidEsales\Eshop\{
  * @property-read object $instance = null
  * @property-read string $table
  * @property-read string[] $fields
+ * @property-read string $template
  */
 class EditionClass
 {
@@ -177,9 +178,14 @@ class EditionClass
         return $this->instance instanceof BaseModel ? $this->instance->getCoreTableName() : null;
     }
 
-    protected function _getFields()
+    protected function _getFields(): array
     {
         return $this->instance instanceof BaseModel ? $this->instance->getFieldNames() : [];
+    }
+
+    protected function _getTemplate()
+    {
+        return $this->instance instanceof BaseController ? $this->instance->getTemplateName() : null;
     }
 
     /**

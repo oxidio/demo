@@ -12,7 +12,6 @@ use Oxidio\Meta\EditionClass;
 class Meta
 {
     protected $constants = [];
-    protected $use = [];
 
     /**
      * Show meta info (tables, fields, templates, blocks)

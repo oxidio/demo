@@ -7,16 +7,17 @@ namespace DI;
 
 use fn;
 use OxidEsales\EshopCommunity\Setup\Dispatcher;
-use Oxidio\Cli\{DbViews, Meta, Setup};
+use Oxidio\Cli\{DbViews, Meta, Setup, Templates};
 
 return [
     'cli.name'     => 'oxidio',
     'cli.version'  => '0.0.1',
     'cli'          => function(fn\DI\Container $container) {
         $cli = fn\cli($container);
-        $cli->command('setup', new Setup, ['action']);
-        $cli->command('meta', new Meta, ['action']);
-        $cli->command('db:views', new DbViews);
+        $cli->command('shop:setup', new Setup, ['action']);
+        $cli->command('shop:meta', new Meta, ['action']);
+        $cli->command('shop:templates', new Templates, ['action']);
+        $cli->command('shop:db-views', new DbViews);
 
         return $cli;
     },

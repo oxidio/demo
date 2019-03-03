@@ -5,10 +5,7 @@
 
 namespace Oxidio\Meta;
 
-use fn;
-
 /**
- * @property-read string $name
  * @property-read string $comment
  * @property-read string $type
  * @property-read bool   $isPrimaryKey
@@ -18,26 +15,14 @@ use fn;
  */
 class Column
 {
-    use fn\Meta\Properties\ReadOnlyTrait;
+    use ReflectionTrait;
 
-    /**
-     * @var array
-     */
-    protected $properties = [
-        'name'            => null,
+    protected static $DEFAULT = [
         'comment'         => null,
         'type'            => null,
         'isPrimaryKey'    => false,
         'isAutoIncrement' => false,
-        'default'         => null,
         'length'          => null,
+        'default'         => null,
     ];
-
-    /**
-     * @inheritdoc
-     */
-    public function __toString()
-    {
-        return $this->name;
-    }
 }

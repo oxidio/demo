@@ -23,10 +23,10 @@ class Templates
         string $basePath = OX_BASE_PATH . 'Application/views/flow/tpl/',
         string $glob     = '**/*.tpl'
     ) {
-        fn\traverse(Template::find($basePath . $glob), function(Template $template) use ($io) {
+        foreach (Template::find($basePath . $glob) as $template) {
             $io->isVerbose() && $io->title($template->name);
             $io->isVeryVerbose() && $io->listing($template->blocks);
             $io->isVeryVerbose() && $io->listing($template->includes);
-        });
+        }
     }
 }

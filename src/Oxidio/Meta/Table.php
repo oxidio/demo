@@ -10,7 +10,6 @@ use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
- * @property-read string   $name
  * @property-read Column[] $columns
  * @property-read string   $comment
  * @property-read string   $engine
@@ -18,31 +17,7 @@ use OxidEsales\Eshop\Core\Registry;
  */
 class Table
 {
-    use fn\Meta\Properties\ReadOnlyTrait;
-
-    /**
-     * @var array
-     */
-    private $properties;
-
-    public function __construct(string $name, array $fields = [])
-    {
-        $this->properties = ['name' => $name, 'fields' => $fields];
-    }
-
-    public static function cache(string $name, array $fields = []): self
-    {
-        static $cache = [];
-        return $cache[$name] ?? $cache[$name] = new static($name, $fields);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function __get($name)
-    {
-        return $this->properties[$name] ?? $this->properties[$name] = $this->{"resolve$name"}();
-    }
+    use ReflectionTrait;
 
     private function detail($detail): ?string
     {
@@ -98,17 +73,9 @@ class Table
             $key = strtoupper($field);
             if ($column = $columns[$field] ?? null) {
                 $column['type'] .= (($nls[$field] ?? false) ? '-i18n' : '');
-                return new Column($column);
+                return Column::get($field, $column);
             }
-            return new Column(['name' => $field]);
+            return Column::get($field);
         });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function __toString()
-    {
-        return $this->name;
     }
 }

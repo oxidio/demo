@@ -87,15 +87,11 @@ class Meta
 
     private function onVerbose(IO $io, EditionClass $class): void
     {
-        $io->title($class->class);
+        $io->title($class->name);
         $io->table(['property', 'value'], [
             ['package', $class->package],
             ['table', $table = $class->table],
             ['template', $class->template],
-            ['(edition) (toString)', "({$class->edition}) ({$class})"],
-            ['(namespace) (shortName)', "({$class->namespace}) ({$class->shortName})"],
-            ['derivation', $class->derivation->string(' > ')],
-            ['parent-edition', $class->parent ? $class->parent->edition : null],
         ]);
 
         if ($table && $io->isVeryVerbose()) {
@@ -126,6 +122,7 @@ class Meta
 
     protected function onModel(EditionClass $class, string $tableNs, string $fieldNs): void
     {
+
         $table = strtoupper($class->table);
 
         [, $const] = $this->nc("{$tableNs}TABLE\\{$table}");
@@ -133,7 +130,7 @@ class Meta
         if (!$const->doc) {
             $const->doc = ["{$class->table->comment} [{$class->table->engine}]", '', "@see {$table}\\*"];
         }
-        $const->doc[] = "@see \\{$class->class}::__construct";
+        $const->doc[] = "@see \\{$class->name}::__construct";
 
         foreach ($class->table->columns as $columnConstName => $column) {
             [$ns, $const] = $this->nc("{$tableNs}TABLE\\{$table}\\{$columnConstName}");

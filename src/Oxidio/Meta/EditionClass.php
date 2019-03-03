@@ -32,10 +32,9 @@ use OxidEsales\Eshop\{
 };
 
 /**
- * @property-read string $class
+ * @property-read string $name
  * @property-read ReflectionClass $reflection
  * @property-read string $shortName
- * @property-read string $namespace
  * @property-read string $edition
  * @property-read fn\Map|EditionClass[] $derivation
  * @property-read EditionClass $parent = null
@@ -46,7 +45,7 @@ use OxidEsales\Eshop\{
  */
 class EditionClass
 {
-    use fn\Meta\Properties\ReadOnlyTrait;
+    use ReflectionTrait;
 
     /**
      * @var string[]
@@ -72,43 +71,6 @@ class EditionClass
         ObjectSeo::class                   => '\\Admin\\Details\\Seo',
     ];
 
-    /**
-     * @var array
-     */
-    private $properties;
-
-    /**
-     * @var array
-     */
-    private $_edition;
-
-    public function __construct(string $class, array $edition = null)
-    {
-        if (!$edition) {
-            $ns      = explode('\\', $class);
-            $edition = [$ns[0]];
-            if ($ns[0] === 'OxidEsales') {
-                $edition[] = $ns[1];
-            }
-        }
-        $this->_edition = $edition;
-        $this->properties = ['class' => $class, 'edition' => implode('\\', $edition) . '\\'];
-    }
-
-    private static function cache(string $class, array $edition = null): self
-    {
-        static $cache = [];
-        return $cache[$class] ?? $cache[$class] = new static($class, $edition);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function __get($name)
-    {
-        return $this->properties[$name] ?? $this->properties[$name] = $this->{"resolve$name"}();
-    }
-
     protected function resolveDerivation(): fn\Map
     {
         $ref = $this->reflection;
@@ -117,20 +79,30 @@ class EditionClass
             $parents[] = $parent->getName();
             $ref = $parent;
         }
-        return fn\map($parents, function($class) {
-            return strpos($class, $this->edition) === 0 ? static::cache($class, $this->_edition) : null;
+        return fn\map($parents, function(string $class) {
+            return strpos($class, $this->edition) === 0 ? static::get($class) : null;
         });
+    }
+
+    protected function resolveEdition(): string
+    {
+        $ns      = explode('\\', $this->name);
+        $edition = [$ns[0]];
+        if ($ns[0] === 'OxidEsales') {
+            $edition[] = $ns[1];
+        }
+        return implode('\\', $edition) . '\\';
     }
 
     protected function resolveParent(): ?self
     {
         $parent = $this->reflection->getParentClass();
-        return $parent ? static::cache($parent->getName()) : null;
+        return $parent ? static::get($parent->getName()) : null;
     }
 
     protected function resolveReflection(): ReflectionClass
     {
-        return new ReflectionClass($this->class);
+        return new ReflectionClass($this->name);
     }
 
     protected function resolveShortName(): string
@@ -138,21 +110,16 @@ class EditionClass
         return $this->reflection->getShortName();
     }
 
-    protected function resolveNamespace(): string
-    {
-        return $this->reflection->getNamespaceName();
-    }
-
     protected function resolvePackage(): string
     {
         static $packages;
         if ($packages === null) {
             $packages = fn\map(self::PACKAGES)->sort(function(string $left, string $right) {
-                return static::cache($left)->derivation->count() - static::cache($right)->derivation->count();
+                return static::get($left)->derivation->count() - static::get($right)->derivation->count();
             }, fn\Map\Sort::KEYS | fn\Map\Sort::REVERSE)->traverse;
         }
         foreach ($packages as $baseClass => $package) {
-            if (is_a($this->class, $baseClass, true)) {
+            if (is_a($this->name, $baseClass, true)) {
                 return $package;
             }
         }
@@ -175,7 +142,7 @@ class EditionClass
     protected function resolveTable(): ?Table
     {
         if (($model = $this->instance) && $model instanceof BaseModel && $table = $model->getCoreTableName()) {
-            return Table::cache($table, $model->getFieldNames());
+            return Table::get($table, ['fields' => $model->getFieldNames()]);
         }
         return null;
     }
@@ -183,14 +150,6 @@ class EditionClass
     protected function resolveTemplate()
     {
         return $this->instance instanceof BaseController ? $this->instance->getTemplateName() : null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function __toString()
-    {
-        return (string) substr($this->class, strlen($this->edition));
     }
 
     /**
@@ -203,7 +162,7 @@ class EditionClass
         $provider = $provider ?: new UnifiedNameSpaceClassMapProvider(new Facts);
 
         return fn\map($provider->getClassMap())->keys(function(string $class) {
-            return static::cache($class);
+            return static::get($class);
         });
     }
 }

@@ -21,15 +21,21 @@ class Meta
      * @param bool     $filterTable    Filter classes with db tables (not abstract models)
      * @param bool     $filterTemplate Filter classes with templates (not abstract controllers)
      * @param string   $filter         Filter classes by pattern
-     * @param string   $tableNs        Namespace for TABLE\* constants
+     * @param string   $tableNs        Namespace for TABLE\* constants [OxidEsales\Eshop\Core\Database\]
+     * @param string   $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field\]
+     * @param string[] $action         (model-const)
      */
     public function __invoke(
         IO $io,
         bool $filterTable = false,
         bool $filterTemplate = false,
         string $filter = null,
-        string $tableNs = null
+        string $tableNs = 'OxidEsales\\Eshop\\Core\\Database\\',
+        string $fieldNs = 'OxidEsales\\Eshop\\Core\\Field\\',
+        ...$action
     ) {
+        $generateModelConstants = fn\hasValue('model-const', $action);
+
         foreach (EditionClass::all() as $class) {
             if ($filter && stripos($class->package, $filter) === false) {
                 continue;
@@ -41,7 +47,7 @@ class Meta
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $class);
-            $tableNs !== null && $class->table && $this->onClass($class, $tableNs);
+            $generateModelConstants && $class->table && $this->onModel($class, $tableNs, $fieldNs);
         }
 
         $io->writeln(fn\traverse($this->renderConstants()));
@@ -49,9 +55,11 @@ class Meta
 
     private function renderConstants(): \Generator
     {
-        yield '';
-        yield '/** @noinspection SpellCheckingInspection */';
-        yield '';
+        if ($this->constants) {
+            yield '';
+            yield '/** @noinspection SpellCheckingInspection */';
+            yield '';
+        }
 
         foreach ($this->constants as $nsName => $ns) {
             yield '/**';
@@ -117,11 +125,8 @@ class Meta
         return [$data[$ns], $data[$ns]->constants[$const]];
     }
 
-    protected function onClass(EditionClass $class, string $tableNs): void
+    protected function onModel(EditionClass $class, string $tableNs, string $fieldNs): void
     {
-        $tableNs = $tableNs ?: 'OxidEsales\\Eshop\\Core\\Database\\';
-        $filedNs ='OxidEsales\\Eshop\\Core\\Field\\';
-
         $table = strtoupper($class->table);
 
         [, $const] = $this->nc("{$tableNs}TABLE\\{$table}");
@@ -148,7 +153,7 @@ class Meta
             }
             $fieldConstName = strtoupper($class->shortName) . '_' . $fieldConstName;
 
-            [$ns, $const] = $this->nc("{$filedNs}{$fieldConstName}");
+            [$ns, $const] = $this->nc("{$fieldNs}{$fieldConstName}");
             $const->value = "TABLE\\{$table}. '__' . TABLE\\{$table}\\{$columnConstName}";
             $const->doc   = [$column->comment];
             $ns->use      = ["{$tableNs}TABLE"];

@@ -94,7 +94,8 @@ class Table
             ];
         }
 
-        return fn\traverse($this->fields, function(string $field) use($columns, $nls) {
+        return fn\traverse($this->fields, function(string $field, &$key) use($columns, $nls) {
+            $key = strtoupper($field);
             if ($column = $columns[$field] ?? null) {
                 $column['type'] .= (($nls[$field] ?? false) ? '-i18n' : '');
                 return new Column($column);

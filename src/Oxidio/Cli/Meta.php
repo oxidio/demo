@@ -41,7 +41,7 @@ class Meta
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $class);
-            $tableNs !== null && $class->table && $this->onTable($class, $tableNs);
+            $tableNs !== null && $class->table && $this->onClass($class, $tableNs);
         }
 
         $io->writeln(fn\traverse($this->renderConstants()));
@@ -117,20 +117,22 @@ class Meta
         return [$data[$ns], $data[$ns]->constants[$const]];
     }
 
-    protected function onTable(EditionClass $class, string $tableNs): void
+    protected function onClass(EditionClass $class, string $tableNs): void
     {
         $tableNs = $tableNs ?: 'OxidEsales\\Eshop\\Core\\Database\\';
+        $filedNs ='OxidEsales\\Eshop\\Core\\Field\\';
+
         $table = strtoupper($class->table);
 
-        [, $const] = $this->nc("{$tableNs}TABLE\\$table");
+        [, $const] = $this->nc("{$tableNs}TABLE\\{$table}");
         $const->value = var_export($class->table->name, true);
         if (!$const->doc) {
-            $const->doc = ["{$class->table->comment} [{$class->table->engine}]", '', "@see $table\\*"];
+            $const->doc = ["{$class->table->comment} [{$class->table->engine}]", '', "@see {$table}\\*"];
         }
         $const->doc[] = "@see \\{$class->class}::__construct";
 
-        foreach ($class->table->columns as $column) {
-            [$ns, $const] = $this->nc("{$tableNs}TABLE\\{$table}\\" . strtoupper($column));
+        foreach ($class->table->columns as $columnConstName => $column) {
+            [$ns, $const] = $this->nc("{$tableNs}TABLE\\{$table}\\{$columnConstName}");
             $const->value = var_export($column->name, true);
 
             $type = $column->type;
@@ -139,6 +141,17 @@ class Meta
 
             $const->doc = [$column->comment, '', $type];
             $ns->doc = ["@see \\{$tableNs}TABLE\\{$table}"];
+
+            $fieldConstName = $columnConstName;
+            if (strpos($columnConstName, 'OX') === 0) {
+                $fieldConstName = substr($columnConstName, 2);
+            }
+            $fieldConstName = strtoupper($class->shortName) . '_' . $fieldConstName;
+
+            [$ns, $const] = $this->nc("{$filedNs}{$fieldConstName}");
+            $const->value = "TABLE\\{$table}. '__' . TABLE\\{$table}\\{$columnConstName}";
+            $const->doc   = [$column->comment];
+            $ns->use      = ["{$tableNs}TABLE"];
         }
     }
 }

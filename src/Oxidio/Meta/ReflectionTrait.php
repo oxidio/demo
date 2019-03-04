@@ -17,6 +17,11 @@ trait ReflectionTrait
     private $properties = [];
 
     /**
+     * @var self[]
+     */
+    private static $cache = [];
+
+    /**
      * @inheritdoc
      */
     public function __get($name)
@@ -28,20 +33,50 @@ trait ReflectionTrait
     }
 
     /**
+     * @inheritdoc
+     */
+    public function __construct(array $properties = [])
+    {
+        $this->properties = $properties;
+        $this->init();
+    }
+
+    protected function init(): void
+    {
+    }
+
+    public function add(string $property, ...$lines): self
+    {
+        $this->__get($property);
+        foreach ($lines as $line) {
+            if (!$line || !fn\hasValue($line, $this->properties[$property])) {
+                $this->properties[$property][] = $line;
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @param array $properties
      *
      * @return static
      */
-    public static function get(string $name, array $properties = [])
+    public static function get(string $name, array $properties = []): self
     {
-        static $cache = [];
-        if (!isset($cache[static::class][$name])) {
-            $cache[static::class][$name] = $obj = new static;
-            $properties['name'] = $name;
-            $obj->properties    = array_merge(static::$DEFAULT ?? [], $properties);
+        if (!isset(self::$cache[$name])) {
+            self::$cache[$name] = new self(array_merge(self::$DEFAULT ?? [], $properties, ['name' => $name]));
         }
-        return $cache[static::class][$name];
+        return self::$cache[$name];
+    }
+
+    /**
+     * @param array $args
+     * @return self[]
+     */
+    public static function all(...$args): array
+    {
+        return fn\traverse(self::$cache, ...$args);
     }
 
     /**

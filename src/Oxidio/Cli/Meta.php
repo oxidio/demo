@@ -7,12 +7,12 @@ namespace Oxidio\Cli;
 
 use fn\{Cli\IO};
 use fn;
-use Oxidio\Meta\EditionClass;
+use OxidEsales\Facts\Facts;
+use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
+use Oxidio\Meta\{EditionClass, ReflectionConstant, ReflectionNamespace};
 
 class Meta
 {
-    protected $constants = [];
-
     /**
      * Show meta info (tables, fields, templates, blocks)
      *
@@ -35,7 +35,8 @@ class Meta
     ) {
         $generateModelConstants = fn\hasValue('model-const', $action);
 
-        foreach (EditionClass::all() as $class) {
+        foreach (fn\keys((new UnifiedNameSpaceClassMapProvider(new Facts))->getClassMap()) as $name) {
+            $class = EditionClass::get($name);
             if ($filter && stripos($class->package, $filter) === false) {
                 continue;
             }
@@ -49,39 +50,11 @@ class Meta
             $generateModelConstants && $class->table && $this->onModel($class, $tableNs, $fieldNs);
         }
 
-        $io->writeln(fn\traverse($this->renderConstants()));
-    }
-
-    private function renderConstants(): \Generator
-    {
-        if ($this->constants) {
-            yield '';
-            yield '/** @noinspection SpellCheckingInspection */';
-            yield '';
-        }
-
-        foreach ($this->constants as $nsName => $ns) {
-            yield '/**';
-            foreach ($ns->doc as $line) {
-                yield " * $line";
+        foreach (ReflectionNamespace::all() as $namespace) {
+            foreach ($namespace->toPhp() as $line) {
+                $io->writeln($line);
             }
-            yield ' */';
-            yield "namespace $nsName";
-            yield '{';
-            foreach ($ns->use as $use) {
-                yield "    use $use;";
-            }
-            foreach ($ns->constants as $name => $const) {
-                yield '';
-                yield '    /**';
-                foreach ($const->doc as $line) {
-                    yield "     * $line";
-                }
-                yield '     */';
-                yield "    const $name = {$const->value};";
-            }
-            yield '}';
-            yield '';
+            $io->writeln('');
         }
     }
 
@@ -100,48 +73,28 @@ class Meta
         }
     }
 
-    private static function split(string $name): array
-    {
-        $last  = strrpos($name, '\\');
-        return [substr($name, 0, $last), substr($name, $last + 1)];
-    }
-
-    private function nc(string $name): array
-    {
-        $data = &$this->constants;
-
-        [$ns, $const] = self::split($name);
-        if (!isset($data[$ns])) {
-            $data[$ns] = (object)['doc' => [], 'use' => [], 'constants' => []];
-        }
-        if (!isset($data[$ns]->constants[$const])) {
-            $data[$ns]->constants[$const] = (object)['value' => 'null', 'doc' => []];
-        }
-        return [$data[$ns], $data[$ns]->constants[$const]];
-    }
-
     protected function onModel(EditionClass $class, string $tableNs, string $fieldNs): void
     {
-
         $table = strtoupper($class->table);
-
-        [, $const] = $this->nc("{$tableNs}TABLE\\{$table}");
-        $const->value = var_export($class->table->name, true);
-        if (!$const->doc) {
-            $const->doc = ["{$class->table->comment} [{$class->table->engine}]", '', "@see {$table}\\*"];
-        }
-        $const->doc[] = "@see \\{$class->name}::__construct";
+        ReflectionConstant::get("{$tableNs}TABLE\\{$table}", [
+            'value'    => var_export($class->table->name, true),
+            'docBlock' => [
+                "{$class->table->comment} [{$class->table->engine}]",
+                '',
+                "@see {$table}\\*"
+            ]
+        ])->add('docBlock', "@see \\{$class->name}::__construct");
 
         foreach ($class->table->columns as $columnConstName => $column) {
-            [$ns, $const] = $this->nc("{$tableNs}TABLE\\{$table}\\{$columnConstName}");
-            $const->value = var_export($column->name, true);
-
             $type = $column->type;
             $column->length > 0 && $type .= "({$column->length})";
             $column->default !== null && $type .= " = {$column->default}";
 
-            $const->doc = [$column->comment, '', $type];
-            $ns->doc = ["@see \\{$tableNs}TABLE\\{$table}"];
+            ReflectionConstant::get("{$tableNs}TABLE\\{$table}\\{$columnConstName}", [
+                'value'    => var_export($column->name, true),
+                'docBlock' => [$column->comment, '', $type]]
+            )->namespace->add('docBlock',"@see \\{$tableNs}TABLE\\{$table}");
+
 
             $fieldConstName = $columnConstName;
             if (strpos($columnConstName, 'OX') === 0) {
@@ -149,10 +102,10 @@ class Meta
             }
             $fieldConstName = strtoupper($class->shortName) . '_' . $fieldConstName;
 
-            [$ns, $const] = $this->nc("{$fieldNs}{$fieldConstName}");
-            $const->value = "TABLE\\{$table}. '__' . TABLE\\{$table}\\{$columnConstName}";
-            $const->doc   = [$column->comment];
-            $ns->use      = ["{$tableNs}TABLE"];
+            ReflectionConstant::get("{$fieldNs}{$fieldConstName}", [
+                'value'    => "TABLE\\{$table}. '__' . TABLE\\{$table}\\{$columnConstName}",
+                'docBlock' => [$column->comment]
+            ])->namespace->add('use',"{$tableNs}TABLE");
         }
     }
 }

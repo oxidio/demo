@@ -6,8 +6,6 @@
 namespace Oxidio\Meta;
 
 use fn;
-use OxidEsales\Facts\Facts;
-use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use ReflectionClass;
 
 use OxidEsales\Eshop\{
@@ -150,19 +148,5 @@ class EditionClass
     protected function resolveTemplate()
     {
         return $this->instance instanceof BaseController ? $this->instance->getTemplateName() : null;
-    }
-
-    /**
-     * @param UnifiedNameSpaceClassMapProvider|null $provider
-     *
-     * @return fn\Map|self[]
-     */
-    public static function all(UnifiedNameSpaceClassMapProvider $provider = null): fn\Map
-    {
-        $provider = $provider ?: new UnifiedNameSpaceClassMapProvider(new Facts);
-
-        return fn\map($provider->getClassMap())->keys(function(string $class) {
-            return static::get($class);
-        });
     }
 }

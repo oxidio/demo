@@ -6,9 +6,11 @@
 namespace Oxidio\Meta;
 
 use Webmozart\Glob\Glob;
+use fn;
 
 /**
  * @property-read string   $path
+ * @property-read string   $namespace
  * @property-read string[] $blocks
  * @property-read string[] $includes
  */
@@ -18,12 +20,22 @@ class Template
 
     protected function resolveBlocks(): array
     {
-        return $this->tags('block', 'name');
+        $ns = explode('\\', $this->namespace);
+        return fn\traverse($this->tags('block', 'name'), function(string $value) use($ns) {
+            $value = str_replace('\\', '_', str_replace($ns, '', $value));
+            $value = trim(preg_replace('/__+/', '_', $value), '_');
+            return $value  ?  "BLOCK_{$value}" : 'BLOCK';
+        });
     }
 
     protected function resolveIncludes(): array
     {
         return $this->tags('include', 'file');
+    }
+
+    protected function resolveNamespace(): string
+    {
+        return self::unify($this->name);
     }
 
     /**
@@ -41,12 +53,19 @@ class Template
         }
     }
 
+    private static function unify(string $string = null): string
+    {
+        return str_replace(['.TPL', '/', '_'], ['', '\\', '\\'], strtoupper($string));
+    }
+
     private function tags(string $tag, string $param): array
     {
         $pattern = '/' . sprintf('\[{\s*%s\s+%s\s*=\s*"([^"]+)"\s*}\]', $tag, $param) . '/';
         $content = file_get_contents($this->path);
         $matches = [];
         preg_match_all($pattern, $content, $matches);
-        return $matches[1] ?? [];
+        return fn\traverse($matches[1] ?? [], function(string $match) {
+            return fn\mapKey($match)->andValue(self::unify($match));
+        });
     }
 }

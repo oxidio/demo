@@ -7,6 +7,7 @@ namespace Oxidio\Cli;
 
 use fn\{Cli\IO};
 use fn;
+use Oxidio\Meta\ReflectionNamespace;
 use Oxidio\Meta\Template;
 
 class Templates
@@ -15,8 +16,9 @@ class Templates
      * Analyze template structure (files, blocks, includes)
      *
      * @param IO       $io
-     * @param bool     $filterBlock    Filter templates with blocks
-     * @param bool     $filterInclude   Filter templates with includes
+     * @param bool     $filterBlock Filter templates with blocks
+     * @param bool     $filterInclude Filter templates with includes
+     * @param bool     $generate Generate constant namespaces
      * @param string   $basePath [%OX_BASE_PATH% . Application/views/flow/tpl/]
      * @param string   $glob [** / *.tpl]
      */
@@ -24,12 +26,10 @@ class Templates
         IO $io,
         bool $filterBlock,
         bool $filterInclude,
+        bool $generate,
         string $basePath = OX_BASE_PATH . 'Application/views/flow/tpl/',
         string $glob     = '**/*.tpl'
     ) {
-        $keyValue = function(string $value, string $key) {
-            return "$key ($value)";
-        };
 
         foreach (Template::find($basePath . $glob) as $template) {
             if ($filterBlock && !$template->blocks) {
@@ -38,10 +38,28 @@ class Templates
             if ($filterInclude && !$template->includes) {
                 continue;
             }
-
-            $io->isVerbose() && $io->title("{$template->namespace} ({$template->name})");
-            $io->isVeryVerbose() && $io->listing(fn\traverse($template->blocks, $keyValue));
-            $io->isVeryVerbose() && $io->listing(fn\traverse($template->includes, $keyValue));
+            $io->isVerbose() && $this->onVerbose($io, $template);
+            $generate && $template->getConst();
         }
+
+        $generate && $io->writeln(['<?php', '']);
+
+        foreach (ReflectionNamespace::all() as $namespace) {
+            foreach ($namespace->toPhp() as $line) {
+                $io->writeln($line);
+            }
+            $io->writeln('');
+        }
+    }
+
+    private function onVerbose(IO $io, Template $template): void
+    {
+        $keyValue = function(string $value, string $key) {
+            return "$key ($value)";
+        };
+
+        $io->title("{$template->namespace} ({$template->name})");
+        $io->isVeryVerbose() && $io->listing(fn\traverse($template->blocks, $keyValue));
+        $io->isVeryVerbose() && $io->listing(fn\traverse($template->includes, $keyValue));
     }
 }

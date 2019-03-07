@@ -9,10 +9,9 @@ use Webmozart\Glob\Glob;
 use fn;
 
 /**
- * @property-read string   $path
- * @property-read string   $namespace
- * @property-read string[] $blocks
- * @property-read string[] $includes
+ * @property-read string     $namespace
+ * @property-read string[]   $blocks
+ * @property-read Template[] $includes
  */
 class Template
 {
@@ -30,7 +29,30 @@ class Template
 
     protected function resolveIncludes(): array
     {
-        return $this->tags('include', 'file');
+        return fn\traverse($this->tags('include', 'file'), function(string $name) {
+            return static::get($name);
+        });
+    }
+
+    public function getConst(string $ns = ''): ReflectionConstant
+    {
+        $docBlock = fn\traverse($this->includes, function(Template $template) use($ns) {
+            return "@see $ns\\{$template->namespace}";
+        });
+
+        $const = ReflectionConstant::get($ns . $this->namespace, [
+            'value'    => var_export($this->name, true),
+            'docBlock' => $docBlock
+        ]);
+
+        foreach ($this->blocks as $value => $constName) {
+            ReflectionConstant::get("$ns{$this->namespace}\\{$constName}", [
+                'value' => var_export($value, true),
+            ]);
+        }
+
+        return $const;
+
     }
 
     protected function resolveNamespace(): string

@@ -20,6 +20,7 @@ class Templates
      * @param bool     $filterInclude Filter templates with includes
      * @param bool     $generate Generate constant namespaces
      * @param string   $basePath [%OX_BASE_PATH% . Application/views/flow/tpl/]
+     * @param string   $themeNs Namespace for theme constants [OxidEsales\Eshop\Core\Theme\]
      * @param string   $glob [** / *.tpl]
      */
     public function __invoke(
@@ -28,6 +29,7 @@ class Templates
         bool $filterInclude,
         bool $generate,
         string $basePath = OX_BASE_PATH . 'Application/views/flow/tpl/',
+        string $themeNs = 'OxidEsales\\Eshop\\Core\\Theme\\',
         string $glob     = '**/*.tpl'
     ) {
 
@@ -39,7 +41,7 @@ class Templates
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $template);
-            $generate && $template->getConst();
+            $generate && $template->getConst($themeNs);
         }
 
         $generate && $io->writeln(['<?php', '']);

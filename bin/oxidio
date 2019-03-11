@@ -4,6 +4,11 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
-call_user_func(require __DIR__ . '/../vendor/autoload.php', function() {
-    fn\di(__DIR__ . '/../config/di-cli.php')->call('cli');
-});
+call_user_func(function(...$files) {
+    foreach ($files as $file) {
+        /** @noinspection PhpIncludeInspection */
+        file_exists($file) && exit(call_user_func(require $file, function() {
+            fn\di(__DIR__ . '/../config/di-cli.php')->call('cli');
+        }));
+    }
+}, __DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php');

@@ -29,6 +29,9 @@
       "src/autoload-files.php"
     ]
   },
+  "bin": [
+    "bin/oxidio"
+  ],
   "extra": {
     "di": "config/di.php",
     "di-config": {

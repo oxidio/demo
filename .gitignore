@@ -2,12 +2,9 @@
 
 !/bin/
 !/config/
-!/resources/
 !/src/
+!/.gitattributes
 !/.gitignore
-!/.gitlab-ci.yml
-!/CHANGELOG*
 !/composer.json
-!/CONTRIBUTING*
 !/LICENSE
 !/README*

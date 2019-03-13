@@ -8,16 +8,20 @@ namespace DI;
 use fn;
 use OxidEsales\EshopCommunity\Setup\Dispatcher;
 use Oxidio\Cli\{DbViews, Meta, Setup, Templates};
+use Symfony\Component\Console\Command\Command;
 
 return [
-    'cli.name'     => 'oxidio',
-    'cli.version'  => '0.0.1',
+    'cli.name' => 'oxidio-project',
+    'cli.commands.default' => value(function(Command $command) {
+        return $command->setHidden(true);
+    }),
+
     'cli'          => function(fn\DI\Container $container) {
-        $cli = fn\cli($container);
-        $cli->command('shop:setup', new Setup, ['action']);
-        $cli->command('shop:meta', new Meta, ['action']);
-        $cli->command('shop:templates', new Templates, ['action']);
-        $cli->command('shop:db-views', new DbViews);
+        $cli = fn\cli($container, true);
+        $cli->command('setup', Setup::class, ['action']);
+        $cli->command('meta', Meta::class, ['action']);
+        $cli->command('templates', Templates::class, ['action']);
+        $cli->command('db-views', DbViews::class);
 
         return $cli;
     },

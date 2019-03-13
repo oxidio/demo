@@ -4,9 +4,8 @@
   "license": "GPL-3.0",
   "require": {
     "vlucas/phpdotenv": "^3",
-    "php-fn/di": "^1",
-    "php-fn/cli": "^1",
     "phpdocumentor/reflection-docblock": "^4",
+    "oxidio/oxidio": "dev-master",
     "oxidio/bin": "^1",
     "oxidio/shop": "^6",
     "oxidio/facts": "^2",
@@ -31,11 +30,5 @@
   },
   "bin": [
     "bin/oxidio"
-  ],
-  "extra": {
-    "di": "config/di.php",
-    "di-config": {
-      "wiring": "reflection"
-    }
-  }
+  ]
 }

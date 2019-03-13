@@ -3,6 +3,11 @@
  * Copyright (C) oxidio. See LICENSE file for license details.
  */
 
+namespace Oxidio\DI
+{
+    const PROJECT = __DIR__ . '/../config/di.php';
+}
+
 namespace OxidEsales\EshopCommunity\Setup\VARS
 {
     const EULA              = 'iEula';

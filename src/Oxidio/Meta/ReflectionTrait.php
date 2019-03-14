@@ -14,7 +14,8 @@ trait ReflectionTrait
 {
     use fn\Meta\Properties\ReadOnlyTrait;
 
-    private $properties = [];
+    private $properties    = [];
+    private $rawProperties = [];
 
     /**
      * @var self[]
@@ -27,7 +28,13 @@ trait ReflectionTrait
     public function __get($name)
     {
         if (!fn\hasKey($name, $this->properties)) {
-            $this->properties[$name] = $this->{"resolve$name"}();
+            $method = "resolve$name";
+            if (method_exists($this, $method)) {
+                $resolved = $this->$method(fn\at($name, $this->rawProperties, null));
+            } else {
+                $resolved = fn\at($name, $this->rawProperties);
+            }
+            $this->properties[$name] = $resolved;
         }
         return $this->properties[$name];
     }
@@ -37,7 +44,7 @@ trait ReflectionTrait
      */
     public function __construct(array $properties = [])
     {
-        $this->properties = $properties;
+        $this->rawProperties = $properties;
         $this->init();
     }
 
@@ -49,7 +56,7 @@ trait ReflectionTrait
     {
         $this->__get($property);
         foreach ($lines as $line) {
-            if (!$line || !fn\hasValue($line, $this->properties[$property])) {
+            if (!$line || !fn\hasValue($line, $this->$property)) {
                 $this->properties[$property][] = $line;
             }
         }
@@ -65,7 +72,7 @@ trait ReflectionTrait
     public static function get(string $name, array $properties = []): self
     {
         if (!isset(self::$cache[$name])) {
-            self::$cache[$name] = new self(array_merge(self::$DEFAULT ?? [], $properties, ['name' => $name]));
+            self::$cache[$name] = new static(array_merge(self::$DEFAULT ?? [], $properties, ['name' => $name]));
         }
         return self::$cache[$name];
     }

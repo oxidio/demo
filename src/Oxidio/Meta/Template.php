@@ -5,17 +5,22 @@
 
 namespace Oxidio\Meta;
 
+use Generator;
 use Webmozart\Glob\Glob;
 use fn;
 
 /**
- * @property-read string     $namespace
- * @property-read string[]   $blocks
- * @property-read Template[] $includes
+ * @property-read ReflectionNamespace $namespace
+ * @property-read ReflectionConstant  $const
+ * @property-read Template[]          $includes
+ * @property-read string              $path
+ * @property-read string[]            $blocks
  */
 class Template
 {
     use ReflectionTrait;
+
+    protected static $DEFAULT = ['namespace' => null, 'path' => null];
 
     protected function resolveBlocks(): array
     {
@@ -34,50 +39,50 @@ class Template
         });
     }
 
-    public function getConst(string $ns = ''): ReflectionConstant
+    protected function resolveConst(): ReflectionConstant
     {
-        $docBlock = fn\traverse($this->includes, function(Template $template) use($ns) {
-            return "@see $ns\\{$template->namespace}";
+        $docBlock = fn\traverse($this->includes, function(Template $template) {
+            return "@see $template";
         });
 
-        $const = ReflectionConstant::get($ns . $this->namespace, [
+        $const = ReflectionConstant::get($this->namespace . self::unify($this->name), [
             'value'    => var_export($this->name, true),
             'docBlock' => $docBlock
         ]);
 
-        foreach ($this->blocks as $value => $constName) {
-            ReflectionConstant::get("$ns{$this->namespace}\\{$constName}", [
+        foreach ($this->blocks as $value => $block) {
+            ReflectionConstant::get("$const\\{$block}", [
                 'value' => var_export($value, true),
             ]);
         }
 
         return $const;
-
     }
 
-    protected function resolveNamespace(): string
+    protected function resolveNamespace($namespace = null): ReflectionNamespace
     {
-        return self::unify($this->name);
+        return ReflectionNamespace::get((string)$namespace);
     }
 
     /**
      * @param string $glob
      *
-     * @return \Generator|self[]
+     * @param array $properties
+     * @return Generator|self[]
      */
-    public static function find(string $glob): \Generator
+    public static function find(string $glob, array $properties = []): Generator
     {
         $basePath = Glob::getBasePath($glob);
         $offset   = strlen($basePath) + 1;
         foreach (Glob::glob($glob) as $path) {
             $name = substr($path, $offset);
-            yield $name => static::get($name, ['path' => $path]);
+            yield $name => static::get($name, ['path' => $path] + $properties);
         }
     }
 
     private static function unify(string $string = null): string
     {
-        return str_replace(['.TPL', '/', '_'], ['', '\\', '\\'], strtoupper($string));
+        return str_replace(['.TPL', '/', '_'], ['', '_', '_'], strtoupper($string));
     }
 
     private function tags(string $tag, string $param): array

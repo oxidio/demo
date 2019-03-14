@@ -19,6 +19,16 @@ class ReflectionNamespace implements Reflector
 
     protected static $DEFAULT = ['constants' => [], 'docBlock' => [], 'use' => []];
 
+    public function relative($fqn): string
+    {
+        return strrpos($fqn, $this->name) === 0 ? substr($fqn, strlen($this->name)) : $fqn;
+    }
+
+    protected function resolveName(string $name = null): string
+    {
+        return substr($name, -1) === '\\' ? $name : $name . '\\';
+    }
+
     public function toPhp(): Generator
     {
         yield '/**';
@@ -26,7 +36,7 @@ class ReflectionNamespace implements Reflector
             yield " * $line";
         }
         yield ' */';
-        yield "namespace {$this->name}";
+        yield 'namespace ' . substr($this->name, 0, -1);
         yield '{';
         foreach ($this->use as $use) {
             yield "    use $use;";

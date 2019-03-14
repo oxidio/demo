@@ -22,11 +22,18 @@ class ReflectionConstant implements Reflector
 
     protected function init(): void
     {
-        $last = strrpos($name = $this->name, '\\');
-        $this->properties['shortName'] = substr($name, $last + 1);
+        $this->namespace; // register namespace
+    }
 
-        $ns = $this->properties['namespace'] = ReflectionNamespace::get(substr($name, 0, $last));
-        $ns->add('constants', $this);
+    protected function resolveNamespace(): ReflectionNamespace
+    {
+        $last = strrpos($name = $this->name, '\\');
+        return ReflectionNamespace::get(substr($name, 0, $last))->add('constants', $this);
+    }
+
+    protected function resolveShortName(): string
+    {
+        return $this->namespace->relative($this);
     }
 
     public function toPhp(): Generator

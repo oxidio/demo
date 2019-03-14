@@ -26,8 +26,7 @@ class Template
     {
         $ns = explode('_', $this->const->shortName);
         return fn\traverse($this->tags('block', 'name'), function(string $block, string $value) use($ns) {
-            $block = str_replace('\\', '_', str_replace($ns, '', $block));
-            $block = trim(preg_replace('/__+/', '_', $block), '_');
+            $block = implode('_', array_diff(explode('_', $block), $ns));
             $block =  $block  ?  "BLOCK_{$block}" : 'BLOCK';
             return ReflectionConstant::get("{$this->const}\\{$block}", [
                 'value' => var_export($value, true),

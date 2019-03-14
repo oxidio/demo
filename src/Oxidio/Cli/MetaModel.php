@@ -7,14 +7,15 @@ namespace Oxidio\Cli;
 
 use fn\{Cli\IO};
 use fn;
+use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use Oxidio\Meta\{Column, EditionClass, ReflectionNamespace};
 
-class Meta
+class MetaModel
 {
     /**
-     * Show meta info (tables, fields, templates, blocks)
+     * Analyze and generate model namespace constants (tables, columns, fields)
      *
      * @param IO       $io
      * @param bool     $filterTable    Filter classes with db tables (not abstract models)
@@ -22,7 +23,6 @@ class Meta
      * @param string   $filter         Filter classes by pattern
      * @param string   $tableNs        Namespace for table constants [OxidEsales\Eshop\Core\Database\TABLE]
      * @param string   $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
-     * @param string[] $action         (model-const)
      */
     public function __invoke(
         IO $io,
@@ -30,11 +30,8 @@ class Meta
         bool $filterTemplate = false,
         string $filter = null,
         string $tableNs = 'OxidEsales\\Eshop\\Core\\Database\\TABLE',
-        string $fieldNs = 'OxidEsales\\Eshop\\Core\\Field',
-        ...$action
+        string $fieldNs = Field::class
     ) {
-        $generateModelConstants = fn\hasValue('model-const', $action);
-
         foreach (fn\keys((new UnifiedNameSpaceClassMapProvider(new Facts))->getClassMap()) as $name) {
 
             $class = EditionClass::get($name, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
@@ -49,12 +46,13 @@ class Meta
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $class);
-            $generateModelConstants && $class->table && fn\traverse($class->table->columns, function(Column $column) {
+
+            $class->table && fn\traverse($class->table->columns, function(Column $column) {
                 $column->const;
             });
         }
 
-        $generateModelConstants && $io->writeln(['<?php', '']);
+        $io->writeln(['<?php', '']);
 
         foreach (ReflectionNamespace::all() as $namespace) {
             foreach ($namespace->toPhp() as $line) {

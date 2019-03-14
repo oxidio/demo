@@ -11,15 +11,14 @@ use OxidEsales\Eshop\Core\Theme;
 use Oxidio\Meta\ReflectionNamespace;
 use Oxidio\Meta\Template;
 
-class Templates
+class MetaTheme
 {
     /**
-     * Analyze template structure (files, blocks, includes)
+     * Analyze and generate theme namespace constants (templates, blocks, includes)
      *
      * @param IO       $io
      * @param bool     $filterBlock Filter templates with blocks
      * @param bool     $filterInclude Filter templates with includes
-     * @param bool     $generate Generate constant namespaces
      * @param string   $basePath [%OX_BASE_PATH% . Application/views/flow/tpl/]
      * @param string   $themeNs Namespace for theme constants [OxidEsales\Eshop\Core\Theme]
      * @param string   $glob [** / *.tpl]
@@ -28,7 +27,6 @@ class Templates
         IO $io,
         bool $filterBlock,
         bool $filterInclude,
-        bool $generate,
         string $basePath = OX_BASE_PATH . 'Application/views/flow/tpl/',
         string $themeNs = Theme::class,
         string $glob = '**/*.tpl'
@@ -41,10 +39,10 @@ class Templates
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $template);
-            $generate && $template->blocks;
+            $template->blocks;
         }
 
-        $generate && $io->writeln(['<?php', '']);
+        $io->writeln(['<?php', '']);
 
         foreach (ReflectionNamespace::all() as $namespace) {
             foreach ($namespace->toPhp() as $line) {

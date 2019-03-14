@@ -41,7 +41,7 @@ class Templates
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $template);
-            $generate && $template->const;
+            $generate && $template->blocks;
         }
 
         $generate && $io->writeln(['<?php', '']);

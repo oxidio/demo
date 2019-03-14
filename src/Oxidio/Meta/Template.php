@@ -10,11 +10,11 @@ use Webmozart\Glob\Glob;
 use fn;
 
 /**
- * @property-read ReflectionNamespace $namespace
- * @property-read ReflectionConstant  $const
- * @property-read Template[]          $includes
- * @property-read string              $path
- * @property-read string[]            $blocks
+ * @property-read ReflectionNamespace  $namespace
+ * @property-read ReflectionConstant   $const
+ * @property-read Template[]           $includes
+ * @property-read ReflectionConstant[] $blocks
+ * @property-read string               $path
  */
 class Template
 {
@@ -28,7 +28,10 @@ class Template
         return fn\traverse($this->tags('block', 'name'), function(string $value) use($ns) {
             $value = str_replace('\\', '_', str_replace($ns, '', $value));
             $value = trim(preg_replace('/__+/', '_', $value), '_');
-            return $value  ?  "BLOCK_{$value}" : 'BLOCK';
+            $block =  $value  ?  "BLOCK_{$value}" : 'BLOCK';
+            return ReflectionConstant::get("{$this->const}\\{$block}", [
+                'value' => var_export($value, true),
+            ]);
         });
     }
 
@@ -41,22 +44,14 @@ class Template
 
     protected function resolveConst(): ReflectionConstant
     {
-        $docBlock = fn\traverse($this->includes, function(Template $template) {
+        $includes = fn\traverse($this->includes, function(Template $template) {
             return "@see $template";
         });
 
-        $const = ReflectionConstant::get($this->namespace . self::unify($this->name), [
+        return ReflectionConstant::get($this->namespace . self::unify($this->name), [
             'value'    => var_export($this->name, true),
-            'docBlock' => $docBlock
+            'docBlock' => $includes ? ['includes:', ''] + $includes : [],
         ]);
-
-        foreach ($this->blocks as $value => $block) {
-            ReflectionConstant::get("$const\\{$block}", [
-                'value' => var_export($value, true),
-            ]);
-        }
-
-        return $const;
     }
 
     protected function resolveNamespace($namespace = null): ReflectionNamespace

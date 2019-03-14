@@ -24,13 +24,18 @@ class Template
 
     protected function resolveBlocks(): array
     {
-        $ns = explode('_', $this->const->shortName);
-        return fn\traverse($this->tags('block', 'name'), function(string $block, string $value) use($ns) {
-            $block = implode('_', array_diff(explode('_', $block), $ns));
-            $block =  $block  ?  "BLOCK_{$block}" : 'BLOCK';
-            return ReflectionConstant::get("{$this->const}\\{$block}", [
-                'value' => var_export($value, true),
+        $diff = explode('_', $this->const->shortName);
+
+        return fn\traverse($this->tags('block', 'name'), function(string $block, string $value) use($diff) {
+            $block = implode('_', array_diff(explode('_', $block), $diff));
+            $block = $block  ?  "BLOCK_{$block}" : 'BLOCK';
+
+            $this->const->add('docBlock', 'blocks:', "@see \\{$this->const}\\{$block}");
+
+            $const = ReflectionConstant::get("{$this->const}\\{$block}", [
+                'value' => "'{$value}'",
             ]);
+            $const->namespace->add('docBlock', "@see \\{$this->const}");
         });
     }
 
@@ -49,7 +54,7 @@ class Template
 
         return ReflectionConstant::get($this->namespace . self::unify($this->name), [
             'value'    => var_export($this->name, true),
-            'docBlock' => $includes ? ['includes:', ''] + $includes : [],
+            'docBlock' => $includes ? ['includes:'] + $includes : [],
         ]);
     }
 

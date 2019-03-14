@@ -10,10 +10,11 @@ use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
- * @property-read Column[] $columns
- * @property-read string   $comment
- * @property-read string   $engine
- * @property-read string[] $fields
+ * @property-read EditionClass       $class
+ * @property-read ReflectionConstant $const
+ * @property-read Column[]           $columns
+ * @property-read string             $comment
+ * @property-read string             $engine
  */
 class Table
 {
@@ -38,6 +39,19 @@ class Table
         return $details[$this->name][$detail] ?? null;
     }
 
+    public function resolveConst(): ReflectionConstant
+    {
+        $table = strtoupper($this->name);
+        return ReflectionConstant::get("{$this->class->tableNs}{$table}", [
+            'value'    => "'{$this->name}'",
+            'docBlock' => [
+                "{$this->comment} [{$this->engine}]",
+                '',
+                "@see {$table}\\*"
+            ]
+        ]);
+    }
+
     protected function resolveComment(): ?string
     {
         return $this->detail('comment');
@@ -59,6 +73,7 @@ class Table
                 continue;
             }
             $columns[$name] = [
+                'table'           => $this,
                 'name'            => $name,
                 'type'            => $column->type,
                 'comment'         => $column->comment,
@@ -69,13 +84,12 @@ class Table
             ];
         }
 
-        return fn\traverse($this->fields, function(string $field, &$key) use($columns, $nls) {
-            $key = strtoupper($field);
-            if ($column = $columns[$field] ?? null) {
-                $column['type'] .= (($nls[$field] ?? false) ? '-i18n' : '');
-                return Column::get($field, $column);
+        return fn\keys($this->class->fields, function($fieldName) use($columns, $nls) {
+
+            if ($column = $columns[$fieldName] ?? []) {
+                $column['type'] .= (($nls[$fieldName] ?? false) ? '-i18n' : '');
             }
-            return Column::get($field);
+            return Column::create($fieldName, $column);
         });
     }
 }

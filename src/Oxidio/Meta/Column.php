@@ -6,18 +6,21 @@
 namespace Oxidio\Meta;
 
 /**
- * @property-read string $comment
- * @property-read string $type
- * @property-read bool   $isPrimaryKey
- * @property-read bool   $isAutoIncrement
- * @property-read mixed  $default
- * @property-read int    $length
+ * @property-read Table              $table
+ * @property-read ReflectionConstant $const
+ * @property-read string             $comment
+ * @property-read string             $type
+ * @property-read bool               $isPrimaryKey
+ * @property-read bool               $isAutoIncrement
+ * @property-read mixed              $default
+ * @property-read int                $length
  */
 class Column
 {
     use ReflectionTrait;
 
     protected static $DEFAULT = [
+        'table'           => null,
         'comment'         => null,
         'type'            => null,
         'isPrimaryKey'    => false,
@@ -25,4 +28,23 @@ class Column
         'length'          => null,
         'default'         => null,
     ];
+
+    protected function resolveConst(): ReflectionConstant
+    {
+        $type = $this->type;
+        $this->length > 0 && $type .= "({$this->length})";
+        $this->default !== null && $type .= " = {$this->default}";
+
+        $tableConst = $this->table->const;
+
+        $const = ReflectionConstant::get("$tableConst\\" . strtoupper($this->name), [
+            'value'    => "'{$this->name}'",
+            'docBlock' => [$this->comment, '', $type]]
+        );
+        $const->namespace->add('docBlock',"@see \\{$tableConst}");
+        $field = $this->table->class->fields[$this->name];
+        $field->setValue($tableConst->namespace->shortName . $tableConst->shortName . '\\' . $const->shortName);
+
+        return $const;
+    }
 }

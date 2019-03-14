@@ -9,7 +9,7 @@ use fn\{Cli\IO};
 use fn;
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
-use Oxidio\Meta\{EditionClass, ReflectionConstant, ReflectionNamespace};
+use Oxidio\Meta\{Column, EditionClass, ReflectionNamespace};
 
 class Meta
 {
@@ -20,8 +20,8 @@ class Meta
      * @param bool     $filterTable    Filter classes with db tables (not abstract models)
      * @param bool     $filterTemplate Filter classes with templates (not abstract controllers)
      * @param string   $filter         Filter classes by pattern
-     * @param string   $tableNs        Namespace for TABLE\* constants [OxidEsales\Eshop\Core\Database\]
-     * @param string   $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field\]
+     * @param string   $tableNs        Namespace for table constants [OxidEsales\Eshop\Core\Database\TABLE]
+     * @param string   $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
      * @param string[] $action         (model-const)
      */
     public function __invoke(
@@ -29,14 +29,16 @@ class Meta
         bool $filterTable = false,
         bool $filterTemplate = false,
         string $filter = null,
-        string $tableNs = 'OxidEsales\\Eshop\\Core\\Database\\',
-        string $fieldNs = 'OxidEsales\\Eshop\\Core\\Field\\',
+        string $tableNs = 'OxidEsales\\Eshop\\Core\\Database\\TABLE',
+        string $fieldNs = 'OxidEsales\\Eshop\\Core\\Field',
         ...$action
     ) {
         $generateModelConstants = fn\hasValue('model-const', $action);
 
         foreach (fn\keys((new UnifiedNameSpaceClassMapProvider(new Facts))->getClassMap()) as $name) {
-            $class = EditionClass::get($name);
+
+            $class = EditionClass::get($name, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
+
             if ($filter && stripos($class->package, $filter) === false) {
                 continue;
             }
@@ -47,8 +49,12 @@ class Meta
                 continue;
             }
             $io->isVerbose() && $this->onVerbose($io, $class);
-            $generateModelConstants && $class->table && $this->onModel($class, $tableNs, $fieldNs);
+            $generateModelConstants && $class->table && fn\traverse($class->table->columns, function(Column $column) {
+                $column->const;
+            });
         }
+
+        $generateModelConstants && $io->writeln(['<?php', '']);
 
         foreach (ReflectionNamespace::all() as $namespace) {
             foreach ($namespace->toPhp() as $line) {
@@ -68,44 +74,8 @@ class Meta
         ]);
 
         if ($table && $io->isVeryVerbose()) {
-            $io->listing($table->fields);
+            $io->listing($class->fields);
             $table->comment;
-        }
-    }
-
-    protected function onModel(EditionClass $class, string $tableNs, string $fieldNs): void
-    {
-        $table = strtoupper($class->table);
-        ReflectionConstant::get("{$tableNs}TABLE\\{$table}", [
-            'value'    => var_export($class->table->name, true),
-            'docBlock' => [
-                "{$class->table->comment} [{$class->table->engine}]",
-                '',
-                "@see {$table}\\*"
-            ]
-        ])->add('docBlock', "@see \\{$class->name}::__construct");
-
-        foreach ($class->table->columns as $columnConstName => $column) {
-            $type = $column->type;
-            $column->length > 0 && $type .= "({$column->length})";
-            $column->default !== null && $type .= " = {$column->default}";
-
-            ReflectionConstant::get("{$tableNs}TABLE\\{$table}\\{$columnConstName}", [
-                'value'    => var_export($column->name, true),
-                'docBlock' => [$column->comment, '', $type]]
-            )->namespace->add('docBlock',"@see \\{$tableNs}TABLE\\{$table}");
-
-
-            $fieldConstName = $columnConstName;
-            if (strpos($columnConstName, 'OX') === 0) {
-                $fieldConstName = substr($columnConstName, 2);
-            }
-            $fieldConstName = strtoupper($class->shortName) . '_' . $fieldConstName;
-
-            ReflectionConstant::get("{$fieldNs}{$fieldConstName}", [
-                'value'    => "TABLE\\{$table}. '__' . TABLE\\{$table}\\{$columnConstName}",
-                'docBlock' => [$column->comment]
-            ])->namespace->add('use',"{$tableNs}TABLE");
         }
     }
 }

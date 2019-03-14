@@ -6,6 +6,7 @@
 namespace Oxidio\Meta;
 
 use fn;
+use Generator;
 
 /**
  * @property-read string $name
@@ -34,7 +35,7 @@ trait ReflectionTrait
             } else {
                 $resolved = fn\at($name, $this->rawProperties);
             }
-            $this->properties[$name] = $resolved;
+            $this->properties[$name] = $resolved instanceof Generator ? fn\traverse($resolved) : $resolved;
         }
         return $this->properties[$name];
     }
@@ -71,10 +72,12 @@ trait ReflectionTrait
      */
     public static function get(string $name, array $properties = []): self
     {
-        if (!isset(self::$cache[$name])) {
-            self::$cache[$name] = new static(array_merge(self::$DEFAULT ?? [], $properties, ['name' => $name]));
-        }
-        return self::$cache[$name];
+        return self::$cache[$name] ?? self::$cache[$name] = self::create($name, $properties);
+    }
+
+    public static function create(string $name, array $properties = []): self
+    {
+        return new static(array_merge(self::$DEFAULT ?? [], $properties, ['name' => $name]));
     }
 
     /**

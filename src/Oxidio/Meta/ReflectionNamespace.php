@@ -10,6 +10,7 @@ use Reflector;
 
 /**
  * @property-read ReflectionConstant[] $constants
+ * @property-read string               $shortName
  * @property-read string[]             $docBlock
  * @property-read string[]             $use
  */
@@ -27,6 +28,12 @@ class ReflectionNamespace implements Reflector
     protected function resolveName(string $name = null): string
     {
         return substr($name, -1) === '\\' ? $name : $name . '\\';
+    }
+
+    protected function resolveShortName(): string
+    {
+        $parts = array_filter(explode('\\', $this->name));
+        return end($parts) . '\\';
     }
 
     public function toPhp(): Generator

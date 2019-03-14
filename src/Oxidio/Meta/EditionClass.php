@@ -6,6 +6,7 @@
 namespace Oxidio\Meta;
 
 use fn;
+use Generator;
 use ReflectionClass;
 
 use OxidEsales\Eshop\{
@@ -30,7 +31,9 @@ use OxidEsales\Eshop\{
 };
 
 /**
- * @property-read string $name
+ * @property-read ReflectionNamespace $tableNs
+ * @property-read ReflectionNamespace $fieldNs
+ * @property-read ReflectionConstant[] $fields
  * @property-read ReflectionClass $reflection
  * @property-read string $shortName
  * @property-read string $edition
@@ -137,12 +140,38 @@ class EditionClass
         return null;
     }
 
+    protected function resolveTableNs($ns = null)
+    {
+        return ReflectionNamespace::get($ns);
+    }
+
+    protected function resolveFieldNs($ns = null)
+    {
+        return ReflectionNamespace::get($ns, ['use' => [substr($this->tableNs, 0, -1)]]);
+    }
+
     protected function resolveTable(): ?Table
     {
-        if (($model = $this->instance) && $model instanceof BaseModel && $table = $model->getCoreTableName()) {
-            return Table::get($table, ['fields' => $model->getFieldNames()]);
+        if (($model = $this->instance) && $model instanceof BaseModel && $tableName = $model->getCoreTableName()) {
+            $table = Table::get($tableName, ['class' => $this]);
+            $table->const->add('docBlock', "@see \\{$this->name}::__construct");
+            return $table;
         }
         return null;
+    }
+
+    protected function resolveFields(): Generator
+    {
+        if (($model = $this->instance) && $model instanceof BaseModel) {
+            foreach ($model->getFieldNames() as $fieldName) {
+                $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
+                $name = strtoupper($this->shortName . '_' . $name);
+                yield $fieldName => ReflectionConstant::get("{$this->fieldNs}{$name}", [
+                    'value'    => "'$fieldName'",
+                    'docBlock' => ["@see \\{$this->name}"]
+                ]);
+            }
+        }
     }
 
     protected function resolveTemplate()

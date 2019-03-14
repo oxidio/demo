@@ -31,6 +31,12 @@ class ReflectionConstant implements Reflector
         return ReflectionNamespace::get(substr($name, 0, $last))->add('constants', $this);
     }
 
+    public function setValue($value, $export = false): self
+    {
+        $this->properties['value'] = $export ? var_export($value, true) : $value;
+        return $this;
+    }
+
     protected function resolveShortName(): string
     {
         return $this->namespace->relative($this);

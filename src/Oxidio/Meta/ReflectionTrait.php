@@ -81,15 +81,6 @@ trait ReflectionTrait
     }
 
     /**
-     * @param array $args
-     * @return self[]
-     */
-    public static function all(...$args): array
-    {
-        return fn\traverse(self::$cache, ...$args);
-    }
-
-    /**
      * @inheritdoc
      */
     public function __toString()

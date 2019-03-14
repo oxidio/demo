@@ -31,18 +31,18 @@ use OxidEsales\Eshop\{
 };
 
 /**
- * @property-read ReflectionNamespace $tableNs
- * @property-read ReflectionNamespace $fieldNs
- * @property-read ReflectionConstant[] $fields
- * @property-read ReflectionClass $reflection
- * @property-read string $shortName
- * @property-read string $edition
+ * @property-read string                $shortName
+ * @property-read string                $edition
+ * @property-read string                $template
+ * @property-read string                $package
+ * @property-read ReflectionClass       $reflection
+ * @property-read ReflectionNamespace   $tableNs
+ * @property-read ReflectionNamespace   $fieldNs
+ * @property-read ReflectionConstant[]  $fields
  * @property-read fn\Map|EditionClass[] $derivation
- * @property-read EditionClass $parent = null
- * @property-read string $package
- * @property-read object $instance = null
- * @property-read Table $table = null
- * @property-read string $template
+ * @property-read EditionClass|null     $parent
+ * @property-read object|null           $instance
+ * @property-read Table|null            $table
  */
 class EditionClass
 {
@@ -147,7 +147,8 @@ class EditionClass
 
     protected function resolveFieldNs($ns = null)
     {
-        return ReflectionNamespace::get($ns, ['use' => [substr($this->tableNs, 0, -1)]]);
+        $use = substr($this->tableNs, 0, -1);
+        return ReflectionNamespace::get($ns ?: $this->name, ['use' => [$use]]);
     }
 
     protected function resolveTable(): ?Table
@@ -163,9 +164,11 @@ class EditionClass
     protected function resolveFields(): Generator
     {
         if (($model = $this->instance) && $model instanceof BaseModel) {
+            $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
+
             foreach ($model->getFieldNames() as $fieldName) {
                 $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
-                $name = strtoupper($this->shortName . '_' . $name);
+                $name = strtoupper($prefix . $name);
                 yield $fieldName => ReflectionConstant::get("{$this->fieldNs}{$name}", [
                     'value'    => "'$fieldName'",
                     'docBlock' => ["@see \\{$this->name}"]

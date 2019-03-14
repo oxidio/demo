@@ -7,6 +7,7 @@ namespace Oxidio\Meta;
 
 use Generator;
 use Reflector;
+use fn;
 
 /**
  * @property-read ReflectionNamespace $namespace
@@ -22,13 +23,7 @@ class ReflectionConstant implements Reflector
 
     protected function init(): void
     {
-        $this->namespace; // register namespace
-    }
-
-    protected function resolveNamespace(): ReflectionNamespace
-    {
-        $last = strrpos($name = $this->name, '\\');
-        return ReflectionNamespace::get(substr($name, 0, $last))->add('constants', $this);
+        $this->name;
     }
 
     public function setValue($value, $export = false): self
@@ -37,9 +32,18 @@ class ReflectionConstant implements Reflector
         return $this;
     }
 
+    protected function resolveName($name): string
+    {
+        $last = strrpos($name, '\\');
+        $last = substr($name, 0, $last);
+        $this->properties['namespace'] = ReflectionNamespace::get($last)->add('constants', $this);
+        $isReserved = fn\hasValue(strtolower($this->namespace->relative($name)), ReflectionConstant\RESERVED);
+        return $isReserved ? $name . '_' : $name;
+    }
+
     protected function resolveShortName(): string
     {
-        return $this->namespace->relative($this);
+        return $this->namespace->relative($this->name);
     }
 
     public function toPhp(): Generator

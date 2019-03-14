@@ -24,11 +24,11 @@ class Template
 
     protected function resolveBlocks(): array
     {
-        $ns = explode('\\', $this->namespace);
-        return fn\traverse($this->tags('block', 'name'), function(string $value) use($ns) {
-            $value = str_replace('\\', '_', str_replace($ns, '', $value));
-            $value = trim(preg_replace('/__+/', '_', $value), '_');
-            $block =  $value  ?  "BLOCK_{$value}" : 'BLOCK';
+        $ns = explode('_', $this->const->shortName);
+        return fn\traverse($this->tags('block', 'name'), function(string $block, string $value) use($ns) {
+            $block = str_replace('\\', '_', str_replace($ns, '', $block));
+            $block = trim(preg_replace('/__+/', '_', $block), '_');
+            $block =  $block  ?  "BLOCK_{$block}" : 'BLOCK';
             return ReflectionConstant::get("{$this->const}\\{$block}", [
                 'value' => var_export($value, true),
             ]);

@@ -37,7 +37,7 @@ class ReflectionConstant implements Reflector
         $last = strrpos($name, '\\');
         $last = substr($name, 0, $last);
         $this->properties['namespace'] = ReflectionNamespace::get($last)->add('constants', $this);
-        $isReserved = fn\hasValue(strtolower($this->namespace->relative($name)), ReflectionConstant\RESERVED);
+        $isReserved = fn\hasValue(strtolower($this->namespace->relative($name)), fn\Composer\DIPackages::RESERVED);
         return $isReserved ? $name . '_' : $name;
     }
 

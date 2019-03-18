@@ -11,13 +11,15 @@ use Oxidio\Cli;
 use Symfony\Component\Console\Command\Command;
 
 return [
-    'cli.name' => 'oxidio-project',
-    'cli.commands.default' => value(function(Command $command) {
-        return $command->setHidden(true);
-    }),
+    'cli' => function(fn\DI\Container $container) {
+        $cli = fn\cli([
+            'cli.name'    => get('name'),
+            'cli.version' => get('version'),
+            'cli.commands.default' => value(function(Command $command) {
+                return $command->setHidden(true);
+            }),
 
-    'cli'          => function(fn\DI\Container $container) {
-        $cli = fn\cli($container, true);
+        ], $container, true);
 
         $cli->command('setup:shop', Cli\Setup::class, ['action']);
         $cli->command('setup:views', Cli\DbViews::class);

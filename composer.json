@@ -2,10 +2,11 @@
   "type": "project",
   "name": "oxidio/project",
   "license": "GPL-3.0",
+  "prefer-stable": true,
   "require": {
     "vlucas/phpdotenv": "^3",
     "phpdocumentor/reflection-docblock": "^4",
-    "oxidio/oxidio": "^1",
+    "oxidio/oxidio": "^1|dev-master",
     "oxidio/bin": "^1",
     "oxidio/shop": "^6",
     "oxidio/facts": "^2",

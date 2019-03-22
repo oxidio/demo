@@ -6,6 +6,9 @@
   "require": {
     "vlucas/phpdotenv": "^3",
     "phpdocumentor/reflection-docblock": "^4",
+    "php-fn/php-fn": "^2",
+    "php-fn/di": "^2",
+    "php-fn/cli": "^2",
     "oxidio/oxidio": "^1|dev-master",
     "oxidio/bin": "^1",
     "oxidio/shop": "^6",
@@ -16,6 +19,9 @@
     "oxidio/doctrine-migration-wrapper": "^2",
     "symfony/yaml": "^3",
     "php": ">=7.1"
+  },
+  "config": {
+    "platform": {"php": "7.1"}
   },
   "autoload": {
     "psr-4": {

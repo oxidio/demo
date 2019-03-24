@@ -13,10 +13,9 @@ use Generator;
  */
 trait ReflectionTrait
 {
-    use fn\Meta\Properties\ReadOnlyTrait;
+    use fn\PropertiesReadOnlyTrait;
 
-    private $properties    = [];
-    private $rawProperties = [];
+    private $resolved = [];
 
     /**
      * @var self[]
@@ -25,19 +24,20 @@ trait ReflectionTrait
 
     /**
      * @inheritdoc
+     * @return mixed
      */
-    public function __get($name)
+    protected function property(string $name, bool $assert)
     {
-        if (!fn\hasKey($name, $this->properties)) {
+        if (!fn\hasKey($name, $this->resolved)) {
             $method = "resolve$name";
             if (method_exists($this, $method)) {
-                $resolved = $this->$method(fn\at($name, $this->rawProperties, null));
+                $value = $this->$method($this->properties[$name] ?? null);
             } else {
-                $resolved = fn\at($name, $this->rawProperties);
+                $value = fn\at($name, $this->properties, ...($assert ? [] : [null]));
             }
-            $this->properties[$name] = $resolved instanceof Generator ? fn\traverse($resolved) : $resolved;
+            $this->resolved[$name] = $value instanceof Generator ? fn\traverse($value) : $value;
         }
-        return $this->properties[$name];
+        return $assert ? $this->resolved[$name] : true;
     }
 
     /**
@@ -45,7 +45,7 @@ trait ReflectionTrait
      */
     public function __construct(array $properties = [])
     {
-        $this->rawProperties = $properties;
+        $this->initProperties($properties);
         $this->init();
     }
 
@@ -58,7 +58,7 @@ trait ReflectionTrait
         $this->__get($property);
         foreach ($lines as $line) {
             if (!$line || !fn\hasValue($line, $this->$property)) {
-                $this->properties[$property][] = $line;
+                $this->resolved[$property][] = $line;
             }
         }
         return $this;
@@ -77,7 +77,7 @@ trait ReflectionTrait
 
     public static function create(string $name, array $properties = []): self
     {
-        return new static(array_merge(self::$DEFAULT ?? [], $properties, ['name' => $name]));
+        return new static(array_merge($properties, ['name' => $name]));
     }
 
     /**

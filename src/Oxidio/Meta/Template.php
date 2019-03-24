@@ -20,7 +20,7 @@ class Template
 {
     use ReflectionTrait;
 
-    protected static $DEFAULT = ['namespace' => null, 'path' => null];
+    protected const DEFAULT = ['namespace' => null, 'path' => null, 'name' => null];
 
     protected function resolveBlocks(): array
     {

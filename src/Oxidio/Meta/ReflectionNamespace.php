@@ -19,7 +19,7 @@ class ReflectionNamespace implements Reflector
 {
     use ReflectionTrait;
 
-    protected static $DEFAULT = ['constants' => [], 'docBlock' => [], 'use' => []];
+    protected const DEFAULT = ['constants' => [], 'docBlock' => [], 'use' => [], 'name' => null];
 
     public function relative($fqn): string
     {

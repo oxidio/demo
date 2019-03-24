@@ -19,7 +19,7 @@ class ReflectionConstant implements Reflector
 {
     use ReflectionTrait;
 
-    protected static $DEFAULT = ['docBlock' => []];
+    protected const DEFAULT = ['docBlock' => [], 'value' => null, 'name' => null];
 
     protected function init(): void
     {
@@ -28,7 +28,7 @@ class ReflectionConstant implements Reflector
 
     public function setValue($value, $export = false): self
     {
-        $this->properties['value'] = $export ? var_export($value, true) : $value;
+        $this->resolved['value'] = $export ? var_export($value, true) : $value;
         return $this;
     }
 
@@ -36,7 +36,7 @@ class ReflectionConstant implements Reflector
     {
         $last = strrpos($name, '\\');
         $last = substr($name, 0, $last);
-        $this->properties['namespace'] = ReflectionNamespace::get($last)->add('constants', $this);
+        $this->resolved['namespace'] = ReflectionNamespace::get($last)->add('constants', $this);
         $isReserved = fn\hasValue(strtolower($this->namespace->relative($name)), fn\Composer\DIPackages::RESERVED);
         return $isReserved ? $name . '_' : $name;
     }

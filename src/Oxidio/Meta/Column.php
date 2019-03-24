@@ -19,7 +19,7 @@ class Column
 {
     use ReflectionTrait;
 
-    protected static $DEFAULT = [
+    protected const DEFAULT = [
         'table'           => null,
         'comment'         => null,
         'type'            => null,
@@ -27,6 +27,7 @@ class Column
         'isAutoIncrement' => false,
         'length'          => null,
         'default'         => null,
+        'name'            => null,
     ];
 
     protected function resolveConst(): ReflectionConstant

@@ -30,6 +30,11 @@ class Column
         'name'            => null,
     ];
 
+    protected function init(): void
+    {
+        $this->const;
+    }
+
     protected function resolveConst(): ReflectionConstant
     {
         $type = $this->type;
@@ -43,8 +48,9 @@ class Column
             'docBlock' => [$this->comment, '', $type]]
         );
         $const->namespace->add('docBlock',"@see \\{$tableConst}");
-        $field = $this->table->class->fields[$this->name];
-        $field->setValue($tableConst->namespace->shortName . $tableConst->shortName . '\\' . $const->shortName);
+        if ($field = $this->table->class->fields[$this->name] ?? null) {
+            $field->setValue($tableConst->namespace->shortName . $tableConst->shortName . '\\' . $const->shortName);
+        }
 
         return $const;
     }

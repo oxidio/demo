@@ -163,10 +163,9 @@ class EditionClass
 
     protected function resolveFields(): Generator
     {
-        if (($model = $this->instance) && $model instanceof BaseModel) {
+        if ($this->reflection->isSubclassOf(BaseModel::class)) {
             $prefix = $this->fieldNs->shortName === $this->shortName . '\\' ? '' : $this->shortName . '_';
-
-            foreach ($model->getFieldNames() as $fieldName) {
+            foreach ($this->instance->getFieldNames() as $fieldName) {
                 $name = strpos($fieldName, 'ox') === 0  ? substr($fieldName, 2) : $fieldName;
                 $name = strtoupper($prefix . $name);
                 yield $fieldName => ReflectionConstant::get("{$this->fieldNs}{$name}", [

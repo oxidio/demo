@@ -7,31 +7,36 @@ namespace Oxidio\Cli;
 
 use fn\{Cli\IO};
 use fn;
+use OxidEsales\Eshop\Core\DbMetaDataHandler;
 use OxidEsales\Eshop\Core\Field;
+use OxidEsales\Eshop\Core\Model\BaseModel;
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
-use Oxidio\Meta\{Column, EditionClass, ReflectionNamespace};
+use Oxidio\Meta\{Column, EditionClass, ReflectionConstant, ReflectionNamespace, Table};
 
 class MetaModel
 {
     /**
      * Analyze and generate model namespace constants (tables, columns, fields)
      *
-     * @param IO       $io
-     * @param bool     $filterTable    Filter classes with db tables (not abstract models)
-     * @param bool     $filterTemplate Filter classes with templates (not abstract controllers)
-     * @param string   $filter         Filter classes by pattern
-     * @param string   $tableNs        Namespace for table constants [OxidEsales\Eshop\Core\Database\TABLE]
-     * @param string   $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
+     * @param IO     $io
+     * @param bool   $filterTable    Filter classes with db tables (not abstract models)
+     * @param bool   $filterTemplate Filter classes with templates (not abstract controllers)
+     * @param bool   $tablesConst    Create TABLES constant
+     * @param string $filter         Filter classes by pattern
+     * @param string $dbNs           Namespace for database constants [OxidEsales\Eshop\Core\Database]
+     * @param string $fieldNs        Namespace for field constants [OxidEsales\Eshop\Core\Field]
      */
     public function __invoke(
         IO $io,
         bool $filterTable = false,
         bool $filterTemplate = false,
+        bool $tablesConst = false,
         string $filter = null,
-        string $tableNs = 'OxidEsales\\Eshop\\Core\\Database\\TABLE',
+        string $dbNs = 'OxidEsales\\Eshop\\Core\\Database',
         string $fieldNs = Field::class
     ) {
+        $tableNs = $dbNs . '\\TABLE';
         foreach (fn\keys((new UnifiedNameSpaceClassMapProvider(new Facts))->getClassMap()) as $name) {
 
             $class = EditionClass::get($name, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
@@ -51,6 +56,32 @@ class MetaModel
                 $column->const;
             });
         }
+
+        $tables = Table::cached();
+        $class  = EditionClass::get(BaseModel::class, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
+        foreach (oxNew(DbMetaDataHandler::class)->getAllTables() as $table) {
+            if (isset($tables[$table]) || strpos($table, 'oxv_') === 0) {
+                continue;
+            }
+            Table::create($table, ['class' => $class]);
+            $io->isVerbose() && $io->writeln("table $table has no class");
+        }
+
+        $tablesConst && ReflectionConstant::create($dbNs . '\\TABLES', [
+            'value' => fn\map((function() {
+                yield '[';
+                foreach (Table::cached() as $table) {
+                    $ns = $table->const->namespace->shortName . $table->const->shortName;
+                    yield "        $ns => [";
+                    foreach ($table->columns as $column) {
+                        $field = strpos($column, 'ox') === 0  ? substr($column, 2) : $column;
+                        yield "            '$field' => $ns\\{$column->const->shortName},";
+                    }
+                    yield '        ],';
+                }
+                yield '    ]';
+            })())->string,
+        ])->namespace->add('use', $tableNs);
 
         $io->writeln([
             '<?php',

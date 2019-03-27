@@ -49,6 +49,15 @@ trait ReflectionTrait
         $this->init();
     }
 
+    /**
+     * @param array $args
+     * @return fn\Map|self[]
+     */
+    public static function cached(...$args): fn\Map
+    {
+        return fn\map(self::$cache, ...$args);
+    }
+
     protected function init(): void
     {
     }

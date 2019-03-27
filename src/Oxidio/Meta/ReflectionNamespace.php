@@ -43,7 +43,7 @@ class ReflectionNamespace implements Reflector
      */
     public static function all(...$args): iterable
     {
-        return fn\map(self::$cache, ...$args)->sort(function(self $left, self $right) {
+        return self::cached(...$args)->sort(static function(self $left, self $right) {
             return (count($left->use) - count($right->use)) ?: strcmp($left, $right);
         });
     }

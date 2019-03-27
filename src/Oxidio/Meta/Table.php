@@ -20,6 +20,12 @@ class Table
 {
     use ReflectionTrait;
 
+    protected function init(): void
+    {
+        $this->const;
+        $this->columns;
+    }
+
     private function detail($detail): ?string
     {
         static $details;
@@ -84,12 +90,9 @@ class Table
             ];
         }
 
-        return fn\keys($this->class->fields, function($fieldName) use($columns, $nls) {
-
-            if ($column = $columns[$fieldName] ?? []) {
-                $column['type'] .= (($nls[$fieldName] ?? false) ? '-i18n' : '');
-            }
-            return Column::create($fieldName, $column);
+        return fn\traverse($columns, static function(array $column, $name) use($nls) {
+            $column['type'] .= (($nls[$name] ?? false) ? '-i18n' : '');
+            return Column::create($name, $column);
         });
     }
 }

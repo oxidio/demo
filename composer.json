@@ -17,7 +17,7 @@
     "oxidio/composer-plugin": "^2",
     "oxidio/theme-flow": "^3",
     "oxidio/doctrine-migration-wrapper": "^2",
-    "symfony/yaml": "^4",
+    "symfony/yaml": "^3",
 
     "php": ">=7.1"
   },

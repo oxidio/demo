@@ -17,11 +17,9 @@
     "oxidio/composer-plugin": "^2",
     "oxidio/theme-flow": "^3",
     "oxidio/doctrine-migration-wrapper": "^2",
-    "symfony/yaml": "^3",
+    "symfony/yaml": "^4",
+
     "php": ">=7.1"
-  },
-  "config": {
-    "platform": {"php": "7.1"}
   },
   "autoload": {
     "psr-4": {

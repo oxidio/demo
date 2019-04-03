@@ -5,9 +5,9 @@
 
 namespace Oxidio\Meta;
 
+use Doctrine\DBAL\Schema\Table as SchemaTable;
 use fn;
-use OxidEsales\Eshop\Core\DatabaseProvider;
-use OxidEsales\Eshop\Core\Registry;
+use Oxidio;
 
 /**
  * @property-read EditionClass       $class
@@ -29,19 +29,9 @@ class Table
     private function detail($detail): ?string
     {
         static $details;
-        if ($details === null) {
-            $select = DatabaseProvider::getDb()->select('
-                SELECT TABLE_NAME, ENGINE, TABLE_COMMENT 
-                FROM information_schema.TABLES 
-                WHERE TABLE_SCHEMA = ? AND TABLE_TYPE = ?', [
-                    Registry::getConfig()->getConfigParam('dbName'),
-                    'BASE TABLE'
-            ]);
-
-            $details = fn\traverse($select, function(array $row) {
-                return fn\mapKey($row[0])->andValue(['engine' => $row[1], 'comment' => $row[2]]);
-            });
-        }
+        $details || $details = fn\traverse(Oxidio\db()->tables, function(SchemaTable $table) {
+            return fn\mapKey($table->getName())->andValue($table->getOptions());
+        });
         return $details[$this->name][$detail] ?? null;
     }
 
@@ -72,7 +62,7 @@ class Table
     {
         $columns = [];
         $nls     = [];
-        foreach (DatabaseProvider::getDb()->metaColumns($this->name) as $column) {
+        foreach (Oxidio\db()->metaColumns($this->name) as $column) {
             $name = strtolower($column->name);
             if (is_numeric(substr($name, ($last = strrpos($name, '_')) + 1))) {
                 $nls[substr($name, 0, $last)] = true;

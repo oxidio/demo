@@ -7,11 +7,12 @@ namespace Oxidio\Cli;
 
 use fn\{Cli\IO};
 use fn;
-use OxidEsales\Eshop\Core\DbMetaDataHandler;
 use OxidEsales\Eshop\Core\Field;
 use OxidEsales\Eshop\Core\Model\BaseModel;
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
+
+use Oxidio;
 use Oxidio\Meta\{Column, EditionClass, ReflectionConstant, ReflectionNamespace, Table};
 
 class MetaModel
@@ -59,8 +60,9 @@ class MetaModel
 
         $tables = Table::cached();
         $class  = EditionClass::get(BaseModel::class, ['tableNs' => $tableNs, 'fieldNs' => $fieldNs]);
-        foreach (oxNew(DbMetaDataHandler::class)->getAllTables() as $table) {
-            if (isset($tables[$table]) || strpos($table, 'oxv_') === 0) {
+        foreach (Oxidio\db()->tables as $table) {
+            $table = $table->getName();
+            if (isset($tables[$table])) {
                 continue;
             }
             Table::create($table, ['class' => $class]);

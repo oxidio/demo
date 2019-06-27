@@ -2,10 +2,9 @@
   "type": "project",
   "name": "oxidio/project",
   "license": "GPL-3.0",
-  "prefer-stable": true,
   "require": {
     "vlucas/phpdotenv": "^3.4",
-    "oxidio/oxidio": "^1.0|dev-master",
+    "oxidio/oxidio": "^1.0",
     "oxidio/bin": "^1.0",
     "oxidio/shop": "^6.3",
     "oxidio/facts": "^2.3",
@@ -31,5 +30,12 @@
   },
   "bin": [
     "bin/oxidio"
-  ]
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    }
+  }
 }

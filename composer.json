@@ -21,16 +21,9 @@
       "OxidEsales\\EshopCommunity\\MigrationsProject\\": [
         "../../../source/migration/project_data/",
         "source/migration/project_data/"
-      ],
-      "Oxidio\\": ["src/Oxidio/"]
-    },
-    "files": [
-      "src/autoload-files.php"
-    ]
+      ]
+    }
   },
-  "bin": [
-    "bin/oxidio"
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "extra": {

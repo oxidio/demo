@@ -7,10 +7,10 @@
     "oxidio/oxidio": "^1.0",
     "oxidio/bin": "^1.0",
     "oxidio/shop": "^6.3",
+    "oxidio/theme-wave": "^1.2",
     "oxidio/facts": "^2.3",
     "oxidio/unified-namespace-generator": "^2.0",
     "oxidio/composer-plugin": "^2.0",
-    "oxidio/theme-flow": "^3.3",
     "oxidio/doctrine-migration-wrapper": "^2.1",
     "symfony/yaml": "^3.4",
 

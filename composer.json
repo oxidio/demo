@@ -7,7 +7,7 @@
     "oxidio/oxidio": "^1.0",
     "oxidio/bin": "^1.0",
     "oxidio/shop": "^6.3",
-    "oxidio/theme-wave": "^1.2",
+    "oxidio/theme-flow": "^3.3",
     "oxidio/facts": "^2.3",
     "oxidio/unified-namespace-generator": "^2.0",
     "oxidio/composer-plugin": "^2.0",

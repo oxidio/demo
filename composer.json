@@ -20,8 +20,6 @@
     "oxidio/theme-wave": "@dev",
     "oxidio/unified-namespace-generator": "@dev",
 
-    "vlucas/phpdotenv": "^3.4",
-    "symfony/yaml": "^3.4",
     "php": ">=7.1"
   },
   "require-dev": {

@@ -6,25 +6,26 @@
     {"type":  "path", "url": "resources/*", "options": {"symlink": true}}
   ],
   "require": {
-    "oxidio/bin": "@dev",
-    "oxidio/composer-plugin": "@dev",
-    "oxidio/doctrine-migration-wrapper": "@dev",
-    "oxidio/facts": "@dev",
-    "oxidio/module-klarna": "@dev",
-    "oxidio/module-paypal": "@dev",
-    "oxidio/module-paypalplus": "@dev",
-    "oxidio/module-seo": "@dev",
-    "oxidio/oxidio": "@dev",
-    "oxidio/shop": "@dev",
-    "oxidio/theme-flow": "@dev",
-    "oxidio/theme-wave": "@dev",
-    "oxidio/unified-namespace-generator": "@dev",
+    "oxidio/bin": "dev-master",
+    "oxidio/composer-plugin": "dev-master",
+    "oxidio/doctrine-migration-wrapper": "dev-master",
+    "oxidio/facts": "dev-master",
+    "oxidio/module-seo": "dev-master",
+    "oxidio/oxidio": "dev-master",
+    "oxidio/shop": "dev-master",
+    "oxidio/theme-flow": "dev-master",
+    "oxidio/theme-wave": "dev-master",
+    "oxidio/unified-namespace-generator": "dev-master",
+
+    "oxidio/module-klarna": "dev-master",
+    "oxidio/module-paypal": "dev-master",
+    "oxidio/module-paypalplus": "dev-master",
 
     "php": ">=7.1"
   },
   "require-dev": {
     "composer/composer": "^1.0",
-    "oxidio/test": "@dev"
+    "oxidio/test": "dev-master"
   },
   "autoload": {
     "psr-4": {

@@ -12,7 +12,7 @@
     "oxidio/facts": "dev-master",
     "oxidio/module-seo": "dev-master",
     "oxidio/oxidio": "dev-master",
-    "oxidio/shop": "dev-master",
+    "oxidio/shop": "~6.3.0",
     "oxidio/theme-flow": "dev-master",
     "oxidio/theme-wave": "dev-master",
     "oxidio/unified-namespace-generator": "dev-master",

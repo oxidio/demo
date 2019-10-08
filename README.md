@@ -9,10 +9,7 @@
 ## oxidio/shop
 
 ```shell script
-
-# create remote
 git remote add up --no-tags -t master -t b-6.x -t b-6.0.x -t b-6.1.x -f git@github.com:OXID-eSales/oxideshop_ce.git
-# create from remote
 git fetch up 'refs/tags/v6*:refs/tags/up/v6*'
 git tag -d $(git tag -l 'up/v6*-*')
 
@@ -27,5 +24,21 @@ git branch --list up/*
 # delete local
 git tag -d $(git tag -l up/*)
 git branch -D $(git branch --list up/*)
+```
 
+## oxidio
+```shell script
+git remote add origin -f git@github.com:oxidio/oxidio.git
+```
+
+## oxidio/composer-plugin
+```shell script
+git remote add up --no-tags -t master -t b-2.x -f git@github.com:OXID-eSales/oxideshop_composer_plugin.git
+git fetch up 'refs/tags/v*:refs/tags/up/v*'
+```
+
+## module-klarna
+```shell script
+git remote add up --no-tags -t master -f git@github.com:topconcepts/OXID-Klarna-6.git
+git fetch up 'refs/tags/v*:refs/tags/up/v*'
 ```

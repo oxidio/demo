@@ -22,11 +22,6 @@
     "composer/composer": "^1.1",
     "oxidio/test": "^1.0"
   },
-  "autoload": {
-    "files": [
-      "source/bootstrap.php"
-    ]
-  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "extra": {

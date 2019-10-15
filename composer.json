@@ -3,7 +3,7 @@
   "type": "project",
   "license": "GPL-3.0",
   "repositories": [
-    {"type":  "path", "url": "libs/*", "options": {"symlink": true}}
+    {"type":  "path", "url": "resources/vendor/*"}
   ],
   "require": {
     "oxidio/oxidio": "~6.3.0",

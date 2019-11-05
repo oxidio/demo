@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-bin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-composer-plugin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-constants" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-doctrine-migration-wrapper" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-facts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-module-klarna" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-module-paypal" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-module-paypalplus" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-module-seo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-oxidio" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-shop" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-test" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-theme-flow" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-theme-wave" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-unified-namespace-generator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn-test" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn-invoker" vcs="Git" />
+  </component>
+</project>

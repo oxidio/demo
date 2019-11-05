@@ -1,32 +1,40 @@
 {
-  "name": "oxidio/project",
-  "type": "project",
-  "license": "GPL-3.0",
-  "repositories": [
-    {"type":  "path", "url": "resources/vendor/*"}
-  ],
-  "require": {
-    "oxidio/oxidio": "~6.3.0",
-    "oxidio/doctrine-migration-wrapper": "^2.1",
-    "oxidio/theme-flow": "^3.3",
-    "oxidio/theme-wave": "^1.2",
-    "oxidio/module-seo": "^1.0",
-    "oxidio/module-klarna": "^5.0",
-    "oxidio/module-paypal": "^5.2",
-    "oxidio/module-paypalplus": "^3.0",
-
-    "php": ">=7.1",
-    "ext-json": "*"
-  },
-  "require-dev": {
-    "composer/composer": "^1.1",
-    "oxidio/test": "^1.0"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.x-dev"
+    "name": "oxidio/project",
+    "type": "project",
+    "license": "GPL-3.0",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "resources/vendor/*"
+        },
+        {
+            "type": "path",
+            "url": "resources/vendor/oxidio-oxidio/tests/fixtures/*"
+        }
+    ],
+    "require": {
+        "oxidio/oxidio": "~6.3.0",
+        "oxidio/doctrine-migration-wrapper": "^2.1",
+        "oxidio/theme-flow": "^3.3",
+        "oxidio/theme-wave": "^1.2",
+        "oxidio/module-seo": "^1.0",
+        "oxidio/module-klarna": "^5.0",
+        "oxidio/module-paypal": "^5.2",
+        "oxidio/module-paypalplus": "^3.0",
+        "php": ">=7.1",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "composer/composer": "^1.1",
+        "oxidio/module-foo": "^1.0",
+        "oxidio/module-bar": "^1.0",
+        "oxidio/test": "^1.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
     }
-  }
 }

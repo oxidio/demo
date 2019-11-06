@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/docker-xampp-bin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-bin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-composer-plugin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-constants" vcs="Git" />

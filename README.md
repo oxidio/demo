@@ -5,6 +5,19 @@
 [![Unstable](https://poser.pugx.org/oxidio/project/v/unstable)](https://packagist.org/packages/oxidio/project)
 [![License](https://poser.pugx.org/oxidio/project/license)](https://packagist.org/packages/oxidio/project)
 
+## versions
+
+| - | 6.x | 6.1 | 6.0 | 4.10 |
+|---|---|---|---|---|
+| branch | b-6.x | b-6.1.x | b-6.0.x | b-5.3-ce |
+| tag | v6.5.0 | v6.3.6 | v6.2.4 | v4.10.8 |
+| meta | 6.2.0-rc.1 | 6.1.5 | 6.0.6 | - |
+| flow | v3.3.0 | v3.2.0 | v3.0.0 | - |
+| oxidio/oxidio | master | oxidio-6.1.x | - | - |
+| oxidio/shop | oxidio-6.x | oxidio-6.1.x | - | - |
+|  |  |  |  |  |
+
+
 ## helpful
 
 ```shell script

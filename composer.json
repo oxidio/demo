@@ -36,5 +36,11 @@
         "branch-alias": {
             "dev-master": "1.x-dev"
         }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit resources/vendor/oxidio-oxidio/tests/",
+            "vendor/bin/phpunit resources/vendor/oxidio-module-seo/tests/"
+        ]
     }
 }

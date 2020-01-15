@@ -13,14 +13,15 @@
         }
     ],
     "require": {
-        "oxidio/oxidio": "~6.3.0",
+        "oxidio/oxidio": "^6.5",
         "oxidio/doctrine-migration-wrapper": "^2.1",
-        "oxidio/theme-flow": "^3.3",
+        "oxidio/theme-flow": "^3.4",
         "oxidio/theme-wave": "^1.2",
         "oxidio/module-seo": "^1.0",
-        "oxidio/module-klarna": "^5.0",
-        "oxidio/module-paypal": "^5.2",
+        "oxidio/module-klarna": "^5.1",
+        "oxidio/module-paypal": "^6.0",
         "oxidio/module-paypalplus": "^3.0",
+        "oxid-esales/gdpr-optin-module": "^2.3",
         "php": ">=7.1",
         "ext-json": "*"
     },

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+function main() {
+    local up=vendor/bin/oxidio-app
+    [[ -x $up ]] || up=resources/vendor/oxidio-bin/bin/oxidio-app
+    [[ -x $up ]] || up=oxidio-app
+
+    $up "$@" :7.4
+}
+
+main "$@"

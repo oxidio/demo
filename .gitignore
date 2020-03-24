@@ -2,6 +2,7 @@
 
 !/.idea
 !/.editorconfig
+!/bin
 !/resources
 !/.gitattributes
 !/.gitignore

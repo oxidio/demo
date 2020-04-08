@@ -4,6 +4,7 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/docker-xampp-bin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-bin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-component-project-test" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-composer-plugin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-constants" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-doctrine-migration-wrapper" vcs="Git" />

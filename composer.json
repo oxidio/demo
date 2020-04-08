@@ -29,6 +29,7 @@
         "composer/composer": "^1.1",
         "oxidio/module-foo": "^1.0",
         "oxidio/module-bar": "^1.0",
+        "oxidio/component-project-test": "^1.0",
         "oxidio/test": "^1.0"
     },
     "minimum-stability": "dev",

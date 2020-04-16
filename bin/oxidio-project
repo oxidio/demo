@@ -5,5 +5,5 @@
  */
 
 exit(call_user_func(require getcwd() . '/vendor/autoload.php', static function () {
-    return Oxidio::get(Oxidio\Project\Cli::class)->run();
+    return Oxidio::di(Oxidio\Project\Cli::class)->run();
 }));

@@ -1,0 +1,5 @@
+modules:
+    oxidio/module-seo:
+        moduleSettings:
+            SEO_GA_ID:
+                value: foo

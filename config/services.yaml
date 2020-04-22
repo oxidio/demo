@@ -1,0 +1,6 @@
+imports:
+    - { resource: ../vendor/oxidio/oxidio/framework.yaml }
+
+services:
+    oxidio.module.settings:
+        class: Oxidio\Project\Configuration\ModuleSettings

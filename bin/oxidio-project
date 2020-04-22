@@ -1,9 +1,0 @@
-#!/usr/bin/env php
-<?php declare(strict_types=1);
-/**
- * Copyright (C) oxidio. See LICENSE file for license details.
- */
-
-exit(call_user_func(require getcwd() . '/vendor/autoload.php', static function () {
-    return Oxidio::di(Oxidio\Project\Cli::class)->run();
-}));

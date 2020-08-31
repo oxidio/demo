@@ -2,7 +2,6 @@
 # shellcheck source=.
 
 function main() {
-    git submodule update --init
     export COMPOSER_ALLOW_XDEBUG=0
     export COMPOSER_MEMORY_LIMIT=-1
     [[ -x vendor/bin/oxidio-install ]] || composer install --prefer-dist --no-suggest --no-plugins --no-scripts

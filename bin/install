@@ -2,10 +2,24 @@
 # shellcheck source=.
 
 function main() {
-    export COMPOSER_ALLOW_XDEBUG=0
-    export COMPOSER_MEMORY_LIMIT=-1
-    [[ -x vendor/bin/oxidio-install ]] || composer install --prefer-dist --no-suggest --no-plugins --no-scripts
-    . vendor/bin/oxidio-install "$@"
+    local script=vendor/bin/oxidio-install
+    [[ -x $script ]] || script=resources/vendor/oxidio-bin/bin/oxidio-install
+    [[ -x $script ]] ||  {
+        export COMPOSER_ALLOW_XDEBUG=0
+        export COMPOSER_MEMORY_LIMIT=-1
+        composer install --no-suggest --no-scripts --no-plugins --no-autoloader --no-dev
+    }
+    $script --project-links=publicProjectLinks "$@"
 }
+
+function publicProjectLinks() {
+    local prefix
+    [[ -f .env ]] && . .env
+    [[ -z ${SHOP_SANDBOX} ]] || prefix='dev/'
+    echo -e "\e[92m# create links: \e[44m oxidio/project \e[0m"
+    publicLinks \
+        "config/${prefix}robots.txt:source/robots.txt"
+}
+export -f publicProjectLinks
 
 main "$@"

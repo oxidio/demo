@@ -4,7 +4,6 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/docker-xampp-bin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-bin" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-component-project-test" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-composer-plugin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-constants" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-doctrine-migration-wrapper" vcs="Git" />
@@ -20,7 +19,7 @@
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-theme-wave" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/oxidio-unified-namespace-generator" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn-test" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn-invoker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/resources/vendor/php-fn-test" vcs="Git" />
   </component>
 </project>

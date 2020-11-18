@@ -5,6 +5,10 @@
     "repositories": [
         {
             "type": "path",
+            "url": "resources/vendor/*"
+        },
+        {
+            "type": "path",
             "url": "resources/vendor/oxidio-oxidio/tests/fixtures/*"
         }
     ],
@@ -18,14 +22,14 @@
         "oxidio/module-paypal": "^6.0",
         "oxidio/module-paypalplus": "^3.0",
         "oxid-esales/gdpr-optin-module": "^2.3",
-        "php": ">=7.1",
-        "ext-json": "*"
-    },
-    "require-dev": {
-        "composer/composer": "^1.1",
+
+        "composer/composer": "^1",
         "oxidio/module-foo": "^1.0",
         "oxidio/module-bar": "^1.0",
-        "oxidio/test": "^1.0"
+        "oxidio/test": "^1.0",
+
+        "php": ">=7.1",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
@@ -43,8 +47,8 @@
     },
     "scripts": {
         "test": [
-            "vendor/bin/phpunit resources/vendor/oxidio-oxidio/tests/",
-            "vendor/bin/phpunit resources/vendor/oxidio-module-seo/tests/"
+            "vendor/bin/phpunit --bootstrap source/bootstrap.php resources/vendor/oxidio-oxidio/tests/",
+            "vendor/bin/phpunit --bootstrap source/bootstrap.php resources/vendor/oxidio-module-seo/tests/"
         ]
     }
 }

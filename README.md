@@ -14,10 +14,10 @@
 | [oxidio:shop](https://packagist.org/packages/oxidio/shop) | oxidio-master | oxidio-6.2.x | oxidio-6.1.x | - | - |
 | [esales:flow](https://packagist.org/packages/oxid-esales/flow-theme) | master | * <sup>v3.4.1</sup> | * <sup>v3.3.0</sup> | b-3.x <sup>v3.0.0</sup> | ? |
 | [oxidio:flow](https://packagist.org/packages/oxidio/theme-flow) | oxidio-master | * | oxidio-3.x | - | - |
-| [esales:generator](https://packagist.org/packages/oxid-esales/oxideshop-unified-namespace-generator) | * | * | * <sup>v2.0.1</sup> | master <sup>v1.0.0</sup> | ? |
+| [esales:generator](https://packagist.org/packages/oxid-esales/oxideshop-unified-namespace-generator) | * | * | * <sup>v2.0.1</sup> | b-1.x <sup>v1.0.0</sup> | ? |
 | [oxidio:generator](https://packagist.org/packages/oxidio/unified-namespace-generator) | * | * | master | - | - |
-| [esales:composer](https://packagist.org/packages/oxid-esales/oxideshop-composer-plugin) | * | master <sup>v4.1.0</sup> | * <sup>v2.0.4</sup> | b-2.x <sup>v2.0.3</sup> | ? |
-| [oxidio:composer](https://packagist.org/packages/oxidio/composer-plugin) | oxidio-master | oxidio-4.x | oxidio-2.x | - | - |
+| [esales:composer](https://packagist.org/packages/oxid-esales/oxideshop-composer-plugin) | * | b-6.x <sup>v5.1.0</sup> | * <sup>v2.0.4</sup> | b-2.x <sup>v2.0.3</sup> | ? |
+| [oxidio:composer](https://packagist.org/packages/oxidio/composer-plugin) | oxidio-master | oxidio-6.x | oxidio-2.x | - | - |
 | [esales:facts](https://packagist.org/packages/oxid-esales/oxideshop-facts) | master | * <sup>v2.3.2</sup> | * | b-1.x <sup>v2.3.1</sup> | ? |
 | [oxidio:facts](https://packagist.org/packages/oxidio/facts) | oxidio-master | * | oxidio-1.x | - | - |
 | [esales:migration](https://packagist.org/packages/oxid-esales/oxideshop-doctrine-migration-wrapper) | * | * | * | master <sup>v2.1.3</sup> | ? |
@@ -35,7 +35,7 @@
 
 # delete tags
 git push origin -d $(git tag -l 'v*')
-git tag -d $(git tag -l)
+git tag -d $(git tag -l 'v*')
 ```
 
 ## shop
@@ -66,7 +66,13 @@ git remote add origin -f git@github.com:oxidio/oxidio.git
 ## oxidio/composer-plugin
 ```shell script
 git remote add up --no-tags -t master -t b-2.x -f git@github.com:OXID-eSales/oxideshop_composer_plugin.git
+git remote set-branches --add up b-6.x
 git fetch up 'refs/tags/v*:refs/tags/up/v*'
+```
+
+## oxidio/unified-namespace-generator
+```shell script
+git remote add up --no-tags -t master -t b-1.x -f git@github.com:OXID-eSales/oxideshop-unified-namespace-generator.git
 ```
 
 ## module-klarna

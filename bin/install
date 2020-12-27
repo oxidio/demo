@@ -7,7 +7,7 @@ function main() {
     [[ -x $script ]] ||  {
         export COMPOSER_ALLOW_XDEBUG=0
         export COMPOSER_MEMORY_LIMIT=-1
-        composer install --no-suggest --no-scripts --no-plugins --no-autoloader --no-dev
+        composer install --no-scripts --no-plugins --no-autoloader --no-dev
     }
     $script --project-links=publicProjectLinks "$@"
 }

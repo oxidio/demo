@@ -23,12 +23,12 @@
         "oxidio/module-paypalplus": "^3.0",
         "oxid-esales/gdpr-optin-module": "^2.3",
 
-        "composer/composer": "^1",
+        "composer/composer": "^1 || ^2",
         "oxidio/module-foo": "^1.0",
         "oxidio/module-bar": "^1.0",
         "oxidio/test": "^1.0",
 
-        "php": ">=7.1",
+        "php": ">=7.3",
         "ext-json": "*"
     },
     "autoload": {
@@ -47,8 +47,8 @@
     },
     "scripts": {
         "test": [
-            "vendor/bin/phpunit --bootstrap source/bootstrap.php resources/vendor/oxidio-oxidio/tests/",
-            "vendor/bin/phpunit --bootstrap source/bootstrap.php resources/vendor/oxidio-module-seo/tests/"
+            "php -d error_reporting=22527 vendor/bin/phpunit --bootstrap source/bootstrap.php resources/vendor/oxidio-oxidio/tests/",
+            "php -d error_reporting=22527 vendor/bin/phpunit --bootstrap source/bootstrap.php resources/vendor/oxidio-module-seo/tests/"
         ]
     }
 }
